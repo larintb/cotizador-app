@@ -155,7 +155,7 @@ export default async function LandingPage() {
           {/* Steps */}
           <div className="flex flex-col md:flex-row items-stretch justify-center">
 
-            <AnimateIn direction="left" delay={0} className="flex-1">
+            <AnimateIn direction="right" delay={0} className="flex-1">
               <div className="h-full flex flex-col items-center text-center px-8 py-10" style={{ background: '#0D1117', border: '1px solid #21262D' }}>
                 <span className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#64748B' }}>Paso 1</span>
                 <p className="font-black uppercase tracking-tight mb-2" style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)' }}>VIN</p>
@@ -164,7 +164,7 @@ export default async function LandingPage() {
             </AnimateIn>
 
             <div className="flex items-center justify-center flex-shrink-0">
-              <AnimateIn direction="none" delay={150}>
+              <AnimateIn direction="right" delay={200}>
                 <div className="w-14 h-14 flex items-center justify-center" style={{ background: '#10B981' }}>
                   <ArrowRight size={22} className="text-white hidden md:block" />
                   <span className="text-white font-black text-xl md:hidden">↓</span>
@@ -172,7 +172,7 @@ export default async function LandingPage() {
               </AnimateIn>
             </div>
 
-            <AnimateIn direction="up" delay={150} className="flex-1">
+            <AnimateIn direction="right" delay={400} className="flex-1">
               <div className="h-full flex flex-col items-center text-center px-8 py-10" style={{ background: '#0D1117', border: '2px solid #10B981' }}>
                 <span className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#10B981' }}>Paso 2</span>
                 <p className="font-black uppercase tracking-tight leading-none mb-2" style={{ fontSize: 'clamp(1.8rem, 4vw, 3rem)', color: '#10B981' }}>
@@ -183,7 +183,7 @@ export default async function LandingPage() {
             </AnimateIn>
 
             <div className="flex items-center justify-center flex-shrink-0">
-              <AnimateIn direction="none" delay={300}>
+              <AnimateIn direction="right" delay={600}>
                 <div className="w-14 h-14 flex items-center justify-center" style={{ background: '#10B981' }}>
                   <ArrowRight size={22} className="text-white hidden md:block" />
                   <span className="text-white font-black text-xl md:hidden">↓</span>
@@ -191,7 +191,7 @@ export default async function LandingPage() {
               </AnimateIn>
             </div>
 
-            <AnimateIn direction="right" delay={300} className="flex-1">
+            <AnimateIn direction="right" delay={800} className="flex-1">
               <div className="h-full flex flex-col items-center text-center px-8 py-10" style={{ background: '#0D1117', border: '1px solid #21262D' }}>
                 <span className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#64748B' }}>Paso 3</span>
                 <p className="font-black uppercase tracking-tight mb-2" style={{ fontSize: 'clamp(2rem, 4vw, 3.2rem)' }}>COTIZACIÓN</p>
