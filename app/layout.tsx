@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
 import './globals.css'
+import NavigationProgress from './_components/NavigationProgress'
+import PageTransition from './_components/PageTransition'
 
 const geist = Geist({
   variable: '--font-geist-sans',
@@ -20,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${geist.variable} h-full antialiased`}>
-      <body className="min-h-full bg-[#f0f0f0] text-black">{children}</body>
+      <body className="min-h-full bg-[#f0f0f0] text-black">
+        <NavigationProgress />
+        <PageTransition>{children}</PageTransition>
+      </body>
     </html>
   )
 }
