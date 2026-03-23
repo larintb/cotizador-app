@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { CheckCircle2, ArrowRight, X } from 'lucide-react'
 
@@ -51,7 +52,7 @@ export default function SuccessCelebration() {
 
   if (!visible) return null
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-4"
       style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}
@@ -120,6 +121,7 @@ export default function SuccessCelebration() {
           100% { transform: scale(1);   opacity: 1; }
         }
       `}</style>
-    </div>
+    </div>,
+    document.body
   )
 }
