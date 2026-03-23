@@ -61,15 +61,15 @@ export default function LoginPage() {
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest text-gray-600 mb-2">
-                  Correo Electrónico
+                  Correo o Usuario
                 </label>
                 <input
-                  type="email"
-                  name="email"
+                  type="text"
+                  name="identifier"
                   required
-                  autoComplete="email"
+                  autoComplete="username"
                   className="w-full px-4 py-3 border-2 border-gray-300 focus:border-black outline-none text-sm font-medium bg-white transition-all duration-200"
-                  placeholder="tu@correo.com"
+                  placeholder="tu@correo.com o tu_usuario"
                 />
               </div>
 

@@ -1,7 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendWelcomeEmail } from '@/lib/email'
 
 export async function register(formData: FormData) {
@@ -51,8 +51,32 @@ export async function register(formData: FormData) {
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  const identifier = (formData.get('identifier') as string)?.trim()
+  const password   = formData.get('password') as string
+
+  // Resolve email: if no @ treat as username and look up in profiles
+  let email = identifier
+  if (!identifier.includes('@')) {
+    const service = await createServiceClient()
+
+    // First get the user's id from profiles by username
+    const { data: profile } = await service
+      .from('profiles')
+      .select('id')
+      .eq('username', identifier)
+      .single()
+
+    if (!profile?.id) {
+      return { error: 'Usuario no encontrado.' }
+    }
+
+    // Then get their email from auth.users via admin API
+    const { data: { user: authUser } } = await service.auth.admin.getUserById(profile.id)
+    if (!authUser?.email) {
+      return { error: 'Usuario no encontrado.' }
+    }
+    email = authUser.email
+  }
 
   const { error } = await supabase.auth.signInWithPassword({ email, password })
 
