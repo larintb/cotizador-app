@@ -56,7 +56,7 @@ export default function NavAccount({ nombre, role }: Props) {
           <Link
             href="/"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:text-[#10B981]"
+            className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:text-[#10B981] hover:bg-[#10B98111]"
             style={{ color: '#94A3B8', borderBottom: '1px solid #21262D' }}
           >
             <Home size={13} />
@@ -66,7 +66,7 @@ export default function NavAccount({ nombre, role }: Props) {
           <Link
             href={DASHBOARD_HREF[role]}
             onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:text-[#10B981]"
+            className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:text-[#10B981] hover:bg-[#10B98111]"
             style={{ color: '#94A3B8', borderBottom: '1px solid #21262D' }}
           >
             <LayoutDashboard size={13} />
@@ -76,7 +76,7 @@ export default function NavAccount({ nombre, role }: Props) {
           <Link
             href="/membresia"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:text-[#10B981]"
+            className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:text-[#10B981] hover:bg-[#10B98111]"
             style={{ color: '#94A3B8', borderBottom: '1px solid #21262D' }}
           >
             <BadgeCheck size={13} />
@@ -86,27 +86,22 @@ export default function NavAccount({ nombre, role }: Props) {
           <Link
             href="/planes"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:text-[#10B981]"
+            className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:text-[#10B981] hover:bg-[#10B98111]"
             style={{ color: '#94A3B8', borderBottom: '1px solid #21262D' }}
           >
             <CreditCard size={13} />
             Planes
           </Link>
 
-          <form
-            action={async () => {
-              await logout()
-            }}
+          <button
+            type="button"
+            onClick={() => logout()}
+            className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:text-white hover:bg-[#ffffff0a]"
+            style={{ color: '#6b7280' }}
           >
-            <button
-              type="submit"
-              className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors hover:text-white"
-              style={{ color: '#6b7280' }}
-            >
-              <LogOut size={13} />
-              Cerrar sesión
-            </button>
-          </form>
+            <LogOut size={13} />
+            Cerrar sesión
+          </button>
         </div>
       )}
     </div>
