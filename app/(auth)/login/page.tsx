@@ -3,12 +3,18 @@
 import { useActionState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
 import { login } from '@/app/actions/auth'
 import { Loader2, LogIn } from 'lucide-react'
 
 const initialState = { error: '' }
 
 export default function LoginPage() {
+  const searchParams = useSearchParams()
+  const linkExpired = searchParams.get('error') === 'link_expired'
+  const confirmed   = searchParams.get('confirmed') === '1'
+  const registered  = searchParams.get('registered') === '1'
+
   const [state, formAction, isPending] = useActionState(
     async (_prev: typeof initialState, formData: FormData) => {
       const result = await login(formData)
@@ -53,6 +59,21 @@ export default function LoginPage() {
             </div>
 
             <form action={formAction} className="p-6 space-y-5">
+              {linkExpired && (
+                <div className="p-4 border-l-4 border-red-500 bg-red-50">
+                  <p className="text-sm font-bold text-red-600">El enlace de confirmación expiró. Regístrate de nuevo para recibir un nuevo correo.</p>
+                </div>
+              )}
+              {confirmed && (
+                <div className="p-4 border-l-4 border-[#10B981] bg-emerald-50">
+                  <p className="text-sm font-bold text-[#10B981]">¡Correo confirmado! Ya puedes ingresar.</p>
+                </div>
+              )}
+              {registered && !confirmed && (
+                <div className="p-4 border-l-4 border-[#10B981] bg-emerald-50">
+                  <p className="text-sm font-bold text-[#10B981]">Revisa tu correo para confirmar tu cuenta.</p>
+                </div>
+              )}
               {state?.error && (
                 <div className="p-4 border-l-4 border-red-500 bg-red-50">
                   <p className="text-sm font-bold text-red-600">{state.error}</p>
