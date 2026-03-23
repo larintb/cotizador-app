@@ -1,6 +1,6 @@
 import { obtenerCotizacionesPropias } from '@/app/actions/cotizaciones'
 import { fmt, redondear500, ESTATUSES, STATUS_LABELS, PROCESS_LABELS } from '@/lib/utils'
-import { ClipboardList, Calendar, FileText } from 'lucide-react'
+import { ClipboardList, Calendar, FileText, User } from 'lucide-react'
 import StatusChanger from './_components/StatusChanger'
 
 function fmtDate(iso: string) {
@@ -140,10 +140,21 @@ export default async function CotizacionesPage() {
                             href={`/api/invoice/${cot.id as string}`}
                             target="_blank"
                             rel="noopener noreferrer"
+                            title="Invoice interno (desglose completo)"
                             className="flex items-center gap-1.5 px-2 py-1.5 border-2 border-gray-200 text-gray-600 hover:border-black hover:text-black transition-all duration-200 text-[10px] font-bold uppercase tracking-widest"
                           >
                             <FileText size={12} />
                             <span className="hidden lg:inline">PDF</span>
+                          </a>
+                          <a
+                            href={`/api/invoice-cliente/${cot.id as string}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Invoice cliente (solo total)"
+                            className="flex items-center gap-1.5 px-2 py-1.5 border-2 border-[#10B981] text-[#10B981] hover:bg-[#10B981] hover:text-white transition-all duration-200 text-[10px] font-bold uppercase tracking-widest"
+                          >
+                            <User size={12} />
+                            <span className="hidden lg:inline">Cliente</span>
                           </a>
                         </div>
                       </td>
