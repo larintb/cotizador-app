@@ -32,12 +32,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <div className="flex items-center gap-6">
             <Link href="/">
               <Image
-                src="/images/logo_arancela.png"
+                src="/images/logo2_white-removebg-preview.png"
                 alt="Arancela"
                 width={120}
                 height={32}
                 className="h-8 w-auto object-contain"
-                style={{ filter: 'brightness(0) invert(1)' }}
               />
             </Link>
 

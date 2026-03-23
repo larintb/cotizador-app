@@ -23,12 +23,11 @@ export default function RegisterPage() {
       <header className="bg-black text-white px-6 py-4">
         <Link href="/" className="w-fit block">
           <Image
-            src="/images/logo_arancela.png"
+            src="/images/logo2_white-removebg-preview.png"
             alt="Arancela"
             width={120}
             height={32}
             className="h-8 w-auto object-contain"
-            style={{ filter: 'brightness(0) invert(1)' }}
           />
         </Link>
       </header>
