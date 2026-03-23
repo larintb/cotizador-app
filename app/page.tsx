@@ -173,7 +173,7 @@ export default async function LandingPage() {
               <div className="h-full flex flex-col items-center text-center px-8 py-10" style={{ background: '#0D1117', border: '2px solid #10B981' }}>
                 <span className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#10B981' }}>Paso 2</span>
                 <p className="font-black uppercase tracking-tight leading-none mb-2" style={{ fontSize: 'clamp(1.8rem, 4vw, 3rem)', color: '#10B981' }}>
-                  TU PRECIO
+                  TU COMISIÓN
                 </p>
                 <p className="text-sm" style={{ color: '#64748B' }}>DTA · IGI · IVA · Honorarios. En segundos.</p>
               </div>
