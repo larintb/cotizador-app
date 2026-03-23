@@ -277,6 +277,81 @@ function billingSuccessHtml(opts: { nombre: string; plan: string; monto: string;
   `)
 }
 
+function cancellationScheduledHtml(opts: { nombre: string; plan: string; accessUntil: string }) {
+  return layout(`
+    <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#000000;letter-spacing:-0.5px;">
+      Cancelación programada
+    </h1>
+    <p style="color:#6b7280;font-size:14px;margin:0 0 32px;">Hola ${opts.nombre}, hemos recibido tu solicitud de cancelación.</p>
+
+    <div style="border-left:4px solid #F59E0B;padding-left:16px;margin-bottom:32px;">
+      <p style="font-size:14px;color:#374151;margin:0;line-height:1.6;">
+        Tu plan <strong>${opts.plan}</strong> seguirá activo hasta el <strong>${opts.accessUntil}</strong>.
+        Después de esa fecha perderás acceso al cotizador. Puedes reactivar tu membresía en cualquier momento antes de esa fecha.
+      </p>
+    </div>
+
+    <a href="${process.env.NEXT_PUBLIC_APP_URL}/membresia"
+       style="display:inline-block;background:#10B981;color:#ffffff;padding:14px 28px;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;">
+      Reactivar Membresía
+    </a>
+
+    <p style="margin-top:32px;font-size:12px;color:#9ca3af;line-height:1.6;">
+      Si cambiaste de opinión, puedes reactivar tu plan desde el portal de membresía antes de ${opts.accessUntil}.
+    </p>
+  `)
+}
+
+function cancellationConfirmedHtml(opts: { nombre: string; plan: string }) {
+  return layout(`
+    <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#000000;letter-spacing:-0.5px;">
+      Suscripción cancelada
+    </h1>
+    <p style="color:#6b7280;font-size:14px;margin:0 0 32px;">Hola ${opts.nombre}, tu suscripción ha sido cancelada.</p>
+
+    <div style="border-left:4px solid #6b7280;padding-left:16px;margin-bottom:32px;">
+      <p style="font-size:14px;color:#374151;margin:0;line-height:1.6;">
+        Tu plan <strong>${opts.plan}</strong> ha finalizado y ya no tienes acceso al cotizador.
+        Puedes volver a suscribirte en cualquier momento para retomar tus cotizaciones.
+      </p>
+    </div>
+
+    <a href="${process.env.NEXT_PUBLIC_APP_URL}/planes"
+       style="display:inline-block;background:#10B981;color:#ffffff;padding:14px 28px;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;">
+      Ver Planes
+    </a>
+
+    <p style="margin-top:32px;font-size:12px;color:#9ca3af;line-height:1.6;">
+      Gracias por haber sido parte de Arancela. Esperamos verte pronto de regreso.
+    </p>
+  `)
+}
+
+function paymentFailedHtml(opts: { nombre: string; plan: string; monto: string }) {
+  return layout(`
+    <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#000000;letter-spacing:-0.5px;">
+      Pago fallido
+    </h1>
+    <p style="color:#6b7280;font-size:14px;margin:0 0 32px;">Hola ${opts.nombre}, no pudimos procesar tu pago.</p>
+
+    <div style="border-left:4px solid #EF4444;padding-left:16px;margin-bottom:32px;">
+      <p style="font-size:14px;color:#374151;margin:0;line-height:1.6;">
+        El cobro de <strong>${opts.monto}</strong> para tu plan <strong>${opts.plan}</strong> no pudo completarse.
+        Por favor actualiza tu método de pago para evitar la suspensión de tu cuenta.
+      </p>
+    </div>
+
+    <a href="${process.env.NEXT_PUBLIC_APP_URL}/membresia"
+       style="display:inline-block;background:#000000;color:#ffffff;padding:14px 28px;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;">
+      Actualizar Método de Pago
+    </a>
+
+    <p style="margin-top:32px;font-size:12px;color:#9ca3af;line-height:1.6;">
+      Si no actualizas tu método de pago, tu suscripción podría ser cancelada automáticamente.
+    </p>
+  `)
+}
+
 // ─── Send functions ──────────────────────────────────────────────────────────
 
 export async function sendWelcomeEmail(to: string, nombre: string) {
@@ -372,5 +447,58 @@ export async function sendBillingSuccessEmail(opts: {
     })
   } catch (err) {
     console.error('[Resend] sendBillingSuccessEmail error:', err)
+  }
+}
+
+export async function sendCancellationScheduledEmail(opts: {
+  to: string
+  nombre: string
+  plan: string
+  accessUntil: string
+}) {
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: opts.to,
+      subject: `Cancelación programada — acceso hasta ${opts.accessUntil} — Arancela`,
+      html: cancellationScheduledHtml(opts),
+    })
+  } catch (err) {
+    console.error('[Resend] sendCancellationScheduledEmail error:', err)
+  }
+}
+
+export async function sendCancellationConfirmedEmail(opts: {
+  to: string
+  nombre: string
+  plan: string
+}) {
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: opts.to,
+      subject: `Tu suscripción ha finalizado — Arancela`,
+      html: cancellationConfirmedHtml(opts),
+    })
+  } catch (err) {
+    console.error('[Resend] sendCancellationConfirmedEmail error:', err)
+  }
+}
+
+export async function sendPaymentFailedEmail(opts: {
+  to: string
+  nombre: string
+  plan: string
+  monto: string
+}) {
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: opts.to,
+      subject: `Pago fallido — actualiza tu método de pago — Arancela`,
+      html: paymentFailedHtml(opts),
+    })
+  } catch (err) {
+    console.error('[Resend] sendPaymentFailedEmail error:', err)
   }
 }

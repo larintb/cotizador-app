@@ -5,6 +5,9 @@ import {
   sendSubscriptionConfirmEmail,
   sendBillingReminderEmail,
   sendBillingSuccessEmail,
+  sendCancellationScheduledEmail,
+  sendCancellationConfirmedEmail,
+  sendPaymentFailedEmail,
 } from '@/lib/email'
 
 const MONTHLY_PRICE_ID = process.env.STRIPE_PRICE_MONTHLY_ID
@@ -139,6 +142,25 @@ export async function POST(request: NextRequest) {
           .from('profiles')
           .update({ subscription_status: 'past_due' })
           .eq('stripe_customer_id', customerId)
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('nombre, subscription_plan')
+          .eq('stripe_customer_id', customerId)
+          .single()
+
+        const email = invoice.customer_email
+        if (profile && email) {
+          const priceId = invoice.subscription
+            ? (await stripe.subscriptions.retrieve(invoice.subscription as string)).items.data[0]?.price.id ?? null
+            : null
+          sendPaymentFailedEmail({
+            to: email,
+            nombre: profile.nombre,
+            plan: getPlanLabel(priceId),
+            monto: getPlanAmount(priceId),
+          })
+        }
         break
       }
 
@@ -177,7 +199,12 @@ export async function POST(request: NextRequest) {
         const customerId   = subscription.customer as string
         if (!customerId) break
 
-        // Downgrade role back to cliente when subscription ends
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('nombre, subscription_plan')
+          .eq('stripe_customer_id', customerId)
+          .single()
+
         await supabase
           .from('profiles')
           .update({
@@ -187,18 +214,30 @@ export async function POST(request: NextRequest) {
             role: 'cliente',
           })
           .eq('stripe_customer_id', customerId)
+
+        const stripe2 = getStripe()
+        const customer = await stripe2.customers.retrieve(customerId)
+        const email = !customer.deleted ? customer.email : null
+        if (profile && email) {
+          const priceId = subscription.items.data[0]?.price.id ?? null
+          sendCancellationConfirmedEmail({
+            to: email,
+            nombre: profile.nombre,
+            plan: getPlanLabel(priceId),
+          })
+        }
         break
       }
 
-      // ── Subscription updated (plan change) ────────────────────────────────
+      // ── Subscription updated (plan change / cancellation scheduled) ─────────
       case 'customer.subscription.updated': {
         const subscription = event.data.object
         const customerId   = subscription.customer as string
         if (!customerId) break
 
-        const priceId    = subscription.items.data[0]?.price.id ?? null
-        const plan       = getPlanLabel(priceId)
-        const isActive   = subscription.status === 'active'
+        const priceId  = subscription.items.data[0]?.price.id ?? null
+        const plan     = getPlanLabel(priceId)
+        const isActive = subscription.status === 'active'
 
         await supabase
           .from('profiles')
@@ -208,6 +247,33 @@ export async function POST(request: NextRequest) {
             role: isActive ? 'admin' : 'cliente',
           })
           .eq('stripe_customer_id', customerId)
+
+        // Send email when user schedules cancellation (cancel_at_period_end just turned true)
+        const prev = event.data.previous_attributes as Record<string, unknown> | undefined
+        const justScheduledCancel =
+          subscription.cancel_at_period_end === true &&
+          prev?.cancel_at_period_end === false
+
+        if (justScheduledCancel && subscription.cancel_at) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('nombre')
+            .eq('stripe_customer_id', customerId)
+            .single()
+
+          const stripe2  = getStripe()
+          const customer = await stripe2.customers.retrieve(customerId)
+          const email    = !customer.deleted ? customer.email : null
+
+          if (profile && email) {
+            sendCancellationScheduledEmail({
+              to: email,
+              nombre: profile.nombre,
+              plan,
+              accessUntil: fmtDate(subscription.cancel_at),
+            })
+          }
+        }
         break
       }
 
