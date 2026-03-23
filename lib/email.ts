@@ -352,61 +352,6 @@ function paymentFailedHtml(opts: { nombre: string; plan: string; monto: string }
   `)
 }
 
-function statusUpdateHtml(opts: {
-  orderNumber: string
-  vehiculo: string
-  fromLabel: string
-  toLabel: string
-  appUrl: string
-}) {
-  return layout(`
-    <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#000000;letter-spacing:-0.5px;">
-      Actualización de tu trámite
-    </h1>
-    <p style="color:#6b7280;font-size:14px;margin:0 0 32px;">
-      El estatus de tu importación ha cambiado.
-    </p>
-
-    <!-- Order box -->
-    <div style="background:#000000;padding:20px;margin-bottom:24px;text-align:center;">
-      <p style="color:#9ca3af;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Número de Orden</p>
-      <p style="color:#ffffff;font-size:24px;font-weight:900;letter-spacing:4px;margin:0;">${opts.orderNumber}</p>
-    </div>
-
-    <!-- Vehicle -->
-    <p style="font-size:13px;color:#6b7280;margin:0 0 20px;text-align:center;">${opts.vehiculo}</p>
-
-    <!-- Status change -->
-    <table width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #10B981;margin-bottom:32px;">
-      <tr>
-        <td style="padding:14px 20px;border-bottom:1px solid #f3f4f6;background:#f9fafb;">
-          <span style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:1.5px;text-transform:uppercase;">Estatus anterior</span>
-        </td>
-        <td style="padding:14px 20px;border-bottom:1px solid #f3f4f6;text-align:right;">
-          <span style="font-size:14px;font-weight:600;color:#6b7280;">${opts.fromLabel}</span>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:14px 20px;background:#f0fdf4;">
-          <span style="font-size:11px;font-weight:700;color:#6b7280;letter-spacing:1.5px;text-transform:uppercase;">Nuevo estatus</span>
-        </td>
-        <td style="padding:14px 20px;background:#f0fdf4;text-align:right;">
-          <span style="font-size:15px;font-weight:800;color:#10B981;">${opts.toLabel}</span>
-        </td>
-      </tr>
-    </table>
-
-    <a href="${opts.appUrl}/cliente/dashboard"
-       style="display:inline-block;background:#10B981;color:#ffffff;padding:14px 28px;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;">
-      Ver Mi Trámite
-    </a>
-
-    <p style="margin-top:24px;font-size:12px;color:#9ca3af;line-height:1.6;">
-      Para más información comunícate con tu agente Arancela.
-    </p>
-  `)
-}
-
 // ─── Send functions ──────────────────────────────────────────────────────────
 
 export async function sendWelcomeEmail(to: string, nombre: string) {
@@ -537,28 +482,6 @@ export async function sendCancellationConfirmedEmail(opts: {
     })
   } catch (err) {
     console.error('[Resend] sendCancellationConfirmedEmail error:', err)
-  }
-}
-
-export async function sendStatusUpdateEmail(opts: {
-  to: string
-  orderNumber: string
-  vehiculo: string
-  fromLabel: string
-  toLabel: string
-}) {
-  try {
-    await resend.emails.send({
-      from: FROM,
-      to: opts.to,
-      subject: `Orden ${opts.orderNumber} — Nuevo estatus: ${opts.toLabel} — Arancela`,
-      html: statusUpdateHtml({
-        ...opts,
-        appUrl: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
-      }),
-    })
-  } catch (err) {
-    console.error('[Resend] sendStatusUpdateEmail error:', err)
   }
 }
 
