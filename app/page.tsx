@@ -111,7 +111,9 @@ export default async function LandingPage() {
           <AnimateIn direction="up" delay={340}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/register"
+                href={profile
+                  ? ({ admin: '/admin/dashboard', superadmin: '/superadmin/usuarios', cliente: '/cliente/dashboard' }[profile.role])
+                  : '/register'}
                 className="inline-flex items-center justify-center gap-3 px-10 py-5 font-black text-sm uppercase tracking-widest text-white transition-all duration-200 hover:opacity-90"
                 style={{ background: '#10B981' }}
               >
