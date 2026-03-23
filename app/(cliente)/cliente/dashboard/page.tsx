@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Search, Loader2, AlertCircle, Banknote, Car, Calendar } from 'lucide-react'
-import { buscarPorOrden } from '@/app/actions/cotizaciones'
+import { buscarCotizacion } from '@/app/actions/cotizaciones'
 import { fmt, redondear500, STATUS_LABELS, PROCESS_LABELS } from '@/lib/utils'
 
 function StatusBadge({ status }: { status: string }) {
@@ -16,23 +16,25 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function ClienteDashboard() {
-  const [orderNumber, setOrderNumber] = useState('')
+  const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [cotizacion, setCotizacion] = useState<any>(null)
 
+  const isVin = query.trim().length === 17
+  const isOrder = query.trim().length === 7
+  const canSearch = isVin || isOrder
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!orderNumber.trim()) return
+    if (!canSearch) return
 
     setLoading(true)
     setError('')
     setCotizacion(null)
 
-    const formatted = orderNumber.toUpperCase().trim()
-    const result = await buscarPorOrden(formatted)
-
+    const result = await buscarCotizacion(query)
     setLoading(false)
 
     if (result.error) {
@@ -50,7 +52,7 @@ export default function ClienteDashboard() {
           Buscar Cotización
         </h1>
         <p className="text-gray-500">
-          Ingresa tu número de orden para consultar el estado de tu cotización.
+          Ingresa tu número de orden o el VIN de tu vehículo.
         </p>
       </div>
 
@@ -59,26 +61,26 @@ export default function ClienteDashboard() {
         <form onSubmit={handleSearch} className="space-y-4">
           <div>
             <label className="block text-xs font-bold uppercase tracking-widest text-gray-600 mb-2">
-              Número de Orden
+              Número de Orden o VIN
             </label>
             <div className="flex gap-3">
               <input
                 type="text"
-                value={orderNumber}
+                value={query}
                 onChange={(e) => {
-                  setOrderNumber(e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''))
+                  setQuery(e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''))
                   setError('')
                   setCotizacion(null)
                 }}
-                placeholder="Ej. ABC-XYZ"
-                maxLength={7}
+                placeholder="ABC-XYZ  ó  1HGBH41JXMN109186"
+                maxLength={17}
                 className="flex-1 px-4 py-3 border-2 border-gray-300 focus:border-black outline-none text-sm font-bold uppercase tracking-widest bg-white transition-all duration-200"
                 autoComplete="off"
                 spellCheck={false}
               />
               <button
                 type="submit"
-                disabled={loading || orderNumber.length < 7}
+                disabled={loading || !canSearch}
                 className="flex items-center gap-2 px-6 py-3 font-bold text-sm uppercase tracking-widest transition-all duration-200 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed bg-black text-white hover:bg-[#10B981]"
               >
                 {loading ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
@@ -86,7 +88,7 @@ export default function ClienteDashboard() {
               </button>
             </div>
             <p className="text-xs text-gray-400 mt-1.5">
-              Formato: 3 letras, guión, 3 letras (Ej. ABC-XYZ)
+              Número de orden: 3 letras, guión, 3 letras (ABC-XYZ) · VIN: 17 caracteres
             </p>
           </div>
         </form>
@@ -94,12 +96,12 @@ export default function ClienteDashboard() {
 
       {/* Error */}
       {error && (
-        <div className="flex items-start gap-3 p-4 border-l-4 border-[#10B981] bg-emerald-50 mb-6 animate-fade-in">
-          <AlertCircle size={18} className="text-[#10B981] flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 p-4 border-l-4 border-red-400 bg-red-50 mb-6">
+          <AlertCircle size={18} className="text-red-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-bold text-[#10B981]">{error}</p>
-            <p className="text-xs text-emerald-400 mt-1">
-              Verifica el número de orden e intenta nuevamente.
+            <p className="text-sm font-bold text-red-600">{error}</p>
+            <p className="text-xs text-red-400 mt-1">
+              Verifica el número de orden o VIN e intenta nuevamente.
             </p>
           </div>
         </div>
@@ -107,7 +109,7 @@ export default function ClienteDashboard() {
 
       {/* Result */}
       {cotizacion && (
-        <div className="animate-fade-in">
+        <div>
           <div className="bg-white border-2 border-gray-200 shadow-xl overflow-hidden">
             {/* Status header */}
             <div className="bg-black text-white p-6">
@@ -170,28 +172,16 @@ export default function ClienteDashboard() {
               </div>
 
               {/* Total */}
-              <div className="border-2 border-[#10B981]">
-                <div className="p-4 bg-white border-b border-[#10B981] flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">
-                      Total Estimado
-                    </p>
-                    <p className="text-xl font-black text-black">
-                      {fmt((cotizacion.result as Record<string, number>).total)}
-                    </p>
-                  </div>
-                  <Banknote size={28} className="text-gray-300" />
+              <div className="bg-[#10B981] p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1 text-white">
+                    Total
+                  </p>
+                  <p className="text-3xl font-black text-white">
+                    {fmt(redondear500((cotizacion.result as Record<string, number>).total))}
+                  </p>
                 </div>
-                <div className="p-4 bg-[#10B981] flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1 text-white">
-                      Total Redondeado
-                    </p>
-                    <p className="text-2xl font-black text-white">
-                      {fmt(redondear500((cotizacion.result as Record<string, number>).total))}
-                    </p>
-                  </div>
-                </div>
+                <Banknote size={32} className="text-white opacity-40" />
               </div>
 
               <div className="p-4 border border-gray-200 bg-gray-50">
@@ -210,8 +200,8 @@ export default function ClienteDashboard() {
       {!cotizacion && !error && (
         <div className="p-5 border border-gray-200 bg-white">
           <p className="text-sm text-gray-500 leading-relaxed">
-            <span className="font-bold text-black">¿No tienes tu número de orden?</span>{' '}
-            Contacta directamente a tu agente de Arancela para obtener tu número de seguimiento.
+            <span className="font-bold text-black">¿No tienes tu número de orden o VIN?</span>{' '}
+            Contacta directamente a tu agente de Arancela para obtener tu información de seguimiento.
           </p>
         </div>
       )}

@@ -74,9 +74,6 @@ export async function GET(
 
     /* Total box */
     .total-box { margin: 0 16px 12px 16px; border: 2px solid #10B981; }
-    .total-exact { padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #10B981; }
-    .total-exact-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #6b7280; margin-bottom: 2px; }
-    .total-exact-value { font-size: 18px; font-weight: 900; color: #000; }
     .total-rounded { padding: 10px 16px; background: #10B981; display: flex; justify-content: space-between; align-items: center; }
     .total-rounded-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.8); margin-bottom: 2px; }
     .total-rounded-value { font-size: 22px; font-weight: 900; color: #fff; }
@@ -205,15 +202,9 @@ export async function GET(
 
     <!-- Total -->
     <div class="total-box">
-      <div class="total-exact">
-        <div>
-          <div class="total-exact-label">Total Exacto</div>
-          <div class="total-exact-value">${fmt(r.total)}</div>
-        </div>
-      </div>
       <div class="total-rounded">
         <div>
-          <div class="total-rounded-label">Total Redondeado</div>
+          <div class="total-rounded-label">Total</div>
           <div class="total-rounded-value">${fmt(redondear500(r.total))}</div>
         </div>
       </div>

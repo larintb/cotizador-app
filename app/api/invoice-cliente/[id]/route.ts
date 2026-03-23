@@ -23,7 +23,6 @@ export async function GET(
   })
 
   const totalRedondeado = redondear500(r.total)
-  const totalExacto = r.total
 
   const html = `<!DOCTYPE html>
 <html lang="es">
@@ -55,8 +54,6 @@ export async function GET(
     .label-sm { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #6b7280; margin-bottom: 8px; }
 
     .total-box { border: 2px solid #10B981; margin-bottom: 32px; }
-    .total-exact { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #10B981; }
-    .total-exact-value { font-size: 22px; font-weight: 900; }
     .total-rounded { padding: 24px; background: #10B981; display: flex; justify-content: space-between; align-items: center; }
     .total-rounded-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.8); margin-bottom: 4px; }
     .total-rounded-value { font-size: 36px; font-weight: 900; color: #fff; }
@@ -98,12 +95,6 @@ export async function GET(
       <!-- Total -->
       <div class="label-sm">Costo total de importación</div>
       <div class="total-box">
-        <div class="total-exact">
-          <div>
-            <div class="label-sm">Total exacto</div>
-            <div class="total-exact-value">${fmt(totalExacto)}</div>
-          </div>
-        </div>
         <div class="total-rounded">
           <div>
             <div class="total-rounded-label">Total a pagar</div>

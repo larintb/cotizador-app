@@ -120,21 +120,28 @@ export async function actualizarEstatus(id: string, newStatus: string, prevStatu
   return { success: true }
 }
 
-export async function buscarPorOrden(orderNumber: string) {
-  // Use service client to bypass RLS for public search
+export async function buscarCotizacion(query: string) {
   const supabase = await createServiceClient()
+  const q = query.toUpperCase().trim()
 
-  const { data: cotizacion, error } = await supabase
-    .from('cotizaciones')
-    .select('*')
-    .eq('order_number', orderNumber.toUpperCase().trim())
-    .single()
-
-  if (error || !cotizacion) {
-    return { error: 'Cotización no encontrada.' }
+  // VIN = 17 chars, order number = 7 chars (ABC-XYZ)
+  if (q.length === 17) {
+    const { data: cotizacion } = await supabase
+      .from('cotizaciones')
+      .select('*')
+      .eq('vehicle_data->>vin', q)
+      .single()
+    if (cotizacion) return { cotizacion }
+  } else {
+    const { data: cotizacion } = await supabase
+      .from('cotizaciones')
+      .select('*')
+      .eq('order_number', q)
+      .single()
+    if (cotizacion) return { cotizacion }
   }
 
-  return { cotizacion }
+  return { error: 'Cotización no encontrada.' }
 }
 
 export async function obtenerTodosUsuarios() {
