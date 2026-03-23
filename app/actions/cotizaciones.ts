@@ -1,9 +1,9 @@
 'use server'
 
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { generateOrderNumber, PROCESS_LABELS } from '@/lib/utils'
+import { generateOrderNumber, PROCESS_LABELS, STATUS_LABELS } from '@/lib/utils'
 import { revalidatePath } from 'next/cache'
-import { sendOrderCreatedEmail } from '@/lib/email'
+import { sendOrderCreatedEmail, sendStatusUpdateEmail } from '@/lib/email'
 
 export async function crearCotizacion(data: {
   vehicleData: Record<string, string>
@@ -51,6 +51,7 @@ export async function crearCotizacion(data: {
       exchange_rate: data.exchangeRate,
       agency_fees: data.agencyFees,
       result: data.result,
+      client_email: data.clientEmail ?? null,
     })
     .select()
     .single()
@@ -96,7 +97,7 @@ export async function obtenerCotizacionesPropias() {
   return { cotizaciones: cotizaciones ?? [] }
 }
 
-export async function actualizarEstatus(id: string, status: string) {
+export async function actualizarEstatus(id: string, newStatus: string, prevStatus: string) {
   const supabase = await createClient()
 
   const {
@@ -105,13 +106,37 @@ export async function actualizarEstatus(id: string, status: string) {
 
   if (!user) return { error: 'No autenticado.' }
 
+  // Fetch cotización to get client_email and vehicle data for notification
+  const { data: cot } = await supabase
+    .from('cotizaciones')
+    .select('client_email, vehicle_data, order_number')
+    .eq('id', id)
+    .eq('admin_id', user.id)
+    .single()
+
   const { error } = await supabase
     .from('cotizaciones')
-    .update({ status })
+    .update({ status: newStatus })
     .eq('id', id)
     .eq('admin_id', user.id)
 
   if (error) return { error: error.message }
+
+  // Send notification email to client if email is stored
+  const clientEmail = (cot as unknown as { client_email?: string } | null)?.client_email
+  if (clientEmail && cot) {
+    const vd = (cot as unknown as { vehicle_data: Record<string, string> }).vehicle_data
+    const vehiculo = vd ? `${vd.year ?? ''} ${vd.make ?? ''} ${vd.model ?? ''}`.trim() : ''
+    const fromLabel = STATUS_LABELS[prevStatus]?.label ?? prevStatus
+    const toLabel   = STATUS_LABELS[newStatus]?.label  ?? newStatus
+    sendStatusUpdateEmail({
+      to: clientEmail,
+      orderNumber: (cot as unknown as { order_number: string }).order_number,
+      vehiculo,
+      fromLabel,
+      toLabel,
+    })
+  }
 
   revalidatePath('/admin/cotizaciones')
   return { success: true }

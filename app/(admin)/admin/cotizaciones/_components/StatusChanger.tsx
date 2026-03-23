@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
+import { AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { actualizarEstatus } from '@/app/actions/cotizaciones'
 
 interface Estatus {
@@ -19,11 +20,16 @@ interface Props {
 }
 
 export default function StatusChanger({ id, currentStatus, estatuses }: Props) {
-  const [isPending, startTransition] = useTransition()
-  const [pending, setPending]        = useState<string | null>(null)
+  const [isPending, setIsPending] = useState(false)
+  const [pending, setPending]     = useState<string | null>(null)
+  const [toast, setToast]         = useState(false)
 
-  const currentLabel = estatuses.find(e => e.value === currentStatus)?.label ?? currentStatus
-  const pendingLabel = estatuses.find(e => e.value === pending)?.label ?? pending
+  const currentIdx = estatuses.findIndex(e => e.value === currentStatus)
+  const pendingIdx  = estatuses.findIndex(e => e.value === pending)
+  const isGoingBack = pendingIdx !== -1 && pendingIdx < currentIdx
+
+  const currentLabel = estatuses[currentIdx]?.label ?? currentStatus
+  const pendingLabel  = estatuses[pendingIdx]?.label  ?? pending
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStatus = e.target.value
@@ -31,12 +37,14 @@ export default function StatusChanger({ id, currentStatus, estatuses }: Props) {
     setPending(newStatus)
   }
 
-  const confirm = () => {
+  const confirm = async () => {
     if (!pending) return
-    startTransition(() => {
-      actualizarEstatus(id, pending)
-    })
+    setIsPending(true)
+    await actualizarEstatus(id, pending, currentStatus)
+    setIsPending(false)
     setPending(null)
+    setToast(true)
+    setTimeout(() => setToast(false), 3000)
   }
 
   const cancel = () => setPending(null)
@@ -56,6 +64,21 @@ export default function StatusChanger({ id, currentStatus, estatuses }: Props) {
         ))}
       </select>
 
+      {/* Toast */}
+      {toast && createPortal(
+        <div
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 shadow-lg"
+          style={{ background: '#000', border: '1px solid #10B981', animation: 'fade-in 0.2s ease-out' }}
+        >
+          <CheckCircle2 size={16} style={{ color: '#10B981', flexShrink: 0 }} />
+          <span className="text-xs font-bold uppercase tracking-widest text-white">
+            Estatus actualizado
+          </span>
+        </div>,
+        document.body
+      )}
+
+      {/* Confirmation modal */}
       {pending && createPortal(
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
@@ -64,27 +87,43 @@ export default function StatusChanger({ id, currentStatus, estatuses }: Props) {
         >
           <div
             className="w-full max-w-sm"
-            style={{ background: '#fff', border: '2px solid #000' }}
+            style={{ background: '#fff', border: `2px solid ${isGoingBack ? '#EF4444' : '#000'}` }}
             onClick={e => e.stopPropagation()}
           >
             {/* Top bar */}
-            <div style={{ background: '#000', height: '3px' }} />
+            <div style={{ background: isGoingBack ? '#EF4444' : '#000', height: '3px' }} />
 
             <div className="p-8">
+              {/* Backwards warning */}
+              {isGoingBack && (
+                <div
+                  className="flex items-start gap-3 p-4 mb-6"
+                  style={{ background: '#fef2f2', border: '1px solid #fecaca' }}
+                >
+                  <AlertTriangle size={15} style={{ color: '#EF4444', flexShrink: 0, marginTop: 1 }} />
+                  <p className="text-xs font-bold" style={{ color: '#EF4444', lineHeight: 1.6 }}>
+                    Estás retrocediendo el estatus. ¿Estás seguro de que deseas hacerlo?
+                  </p>
+                </div>
+              )}
+
               <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#6b7280' }}>
                 Confirmar cambio de estatus
               </p>
               <p className="font-black text-lg uppercase tracking-tight mb-6">
-                {currentLabel} → {pendingLabel}
+                {currentLabel}
+                <span style={{ color: isGoingBack ? '#EF4444' : '#10B981' }}> → </span>
+                {pendingLabel}
               </p>
 
               <div className="flex gap-3">
                 <button
                   onClick={confirm}
-                  className="flex-1 py-3 font-black text-xs uppercase tracking-widest text-white transition-opacity hover:opacity-80"
-                  style={{ background: '#000' }}
+                  disabled={isPending}
+                  className="flex-1 py-3 font-black text-xs uppercase tracking-widest text-white transition-opacity hover:opacity-80 disabled:opacity-50"
+                  style={{ background: isGoingBack ? '#EF4444' : '#000' }}
                 >
-                  Confirmar
+                  {isPending ? 'Guardando...' : 'Confirmar'}
                 </button>
                 <button
                   onClick={cancel}
