@@ -10,14 +10,15 @@ export default async function LandingPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  let profile: { nombre: string; role: 'cliente' | 'admin' | 'superadmin' } | null = null
+  type Profile = { nombre: string; role: 'cliente' | 'admin' | 'superadmin' }
+  let profile: Profile | null = null
   if (user) {
     const { data } = await supabase
       .from('profiles')
       .select('nombre, role')
       .eq('id', user.id)
       .single()
-    if (data) profile = data as typeof profile
+    if (data) profile = data as unknown as Profile
   }
 
   return (

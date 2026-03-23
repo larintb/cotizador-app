@@ -32,14 +32,15 @@ export default async function PlanesPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  let profile: { nombre: string; role: 'cliente' | 'admin' | 'superadmin'; stripe_customer_id: string | null } | null = null
+  type PlanesProfile = { nombre: string; role: 'cliente' | 'admin' | 'superadmin'; stripe_customer_id: string | null }
+  let profile: PlanesProfile | null = null
   if (user) {
     const { data } = await supabase
       .from('profiles')
       .select('nombre, role, stripe_customer_id')
       .eq('id', user.id)
       .single()
-    if (data) profile = data as typeof profile
+    if (data) profile = data as unknown as PlanesProfile
   }
 
   // Use Stripe as source of truth
@@ -60,7 +61,7 @@ export default async function PlanesPage() {
         isActive    = true
         const isAnnual = stripeSub.items.data[0]?.price?.id === process.env.STRIPE_PRICE_ANNUAL_ID
         currentPlan = isAnnual ? 'anual' : 'mensual'
-        const periodEnd = (stripeSub as any).current_period_end ?? null
+        const periodEnd = (stripeSub as unknown as { current_period_end?: number }).current_period_end ?? null
         if (periodEnd && typeof periodEnd === 'number') {
           const d = new Date(periodEnd * 1000)
           if (!isNaN(d.getTime())) {

@@ -6,7 +6,6 @@ import Step2Confirm from './_components/Step2Confirm'
 import Step3Adjustments from './_components/Step3Adjustments'
 import Step4Result from './_components/Step4Result'
 
-// @ts-ignore — JS module from jairo catalog
 import { lookupCustomsValue } from '@/lib/customsValues'
 
 interface VehicleData {

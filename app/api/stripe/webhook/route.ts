@@ -13,6 +13,14 @@ import {
 const MONTHLY_PRICE_ID = process.env.STRIPE_PRICE_MONTHLY_ID
 const ANNUAL_PRICE_ID  = process.env.STRIPE_PRICE_ANNUAL_ID
 
+type StripeSub     = { current_period_end: number; current_period_start: number }
+type StripeInvoice = {
+  customer: string | null
+  customer_email: string | null
+  billing_reason: string | null
+  subscription: string | null
+}
+
 function getPlanLabel(priceId: string | null | undefined): 'Mensual' | 'Anual' {
   return priceId === ANNUAL_PRICE_ID ? 'Anual' : 'Mensual'
 }
@@ -88,7 +96,7 @@ export async function POST(request: NextRequest) {
             nombre: profile.nombre,
             plan,
             monto: getPlanAmount(priceId),
-            nextBilling: fmtDate(subscription.current_period_end),
+            nextBilling: fmtDate((subscription as unknown as StripeSub).current_period_end),
           })
         }
         break
@@ -96,7 +104,7 @@ export async function POST(request: NextRequest) {
 
       // ── Recurring payment success ─────────────────────────────────────────
       case 'invoice.payment_succeeded': {
-        const invoice    = event.data.object
+        const invoice    = event.data.object as unknown as StripeInvoice
         const customerId = invoice.customer as string
         // billing_reason 'subscription_create' is already handled by checkout.session.completed
         if (!customerId || invoice.billing_reason === 'subscription_create') break
@@ -125,7 +133,7 @@ export async function POST(request: NextRequest) {
             nombre: profile.nombre,
             plan,
             monto: getPlanAmount(priceId),
-            nextBilling: fmtDate(sub.current_period_end),
+            nextBilling: fmtDate((sub as unknown as StripeSub).current_period_end),
             periodo,
           })
         }
@@ -134,7 +142,7 @@ export async function POST(request: NextRequest) {
 
       // ── Payment failed ────────────────────────────────────────────────────
       case 'invoice.payment_failed': {
-        const invoice    = event.data.object
+        const invoice    = event.data.object as unknown as StripeInvoice
         const customerId = invoice.customer as string
         if (!customerId) break
 
@@ -166,7 +174,7 @@ export async function POST(request: NextRequest) {
 
       // ── Upcoming invoice — 7 days before billing ──────────────────────────
       case 'invoice.upcoming': {
-        const invoice    = event.data.object
+        const invoice    = event.data.object as unknown as StripeInvoice
         const customerId = invoice.customer as string
         if (!customerId) break
 
@@ -187,7 +195,7 @@ export async function POST(request: NextRequest) {
             nombre: profile.nombre,
             plan,
             monto: getPlanAmount(priceId),
-            billingDate: fmtDate(sub.current_period_end),
+            billingDate: fmtDate((sub as unknown as StripeSub).current_period_end),
           })
         }
         break

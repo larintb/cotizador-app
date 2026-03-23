@@ -57,7 +57,7 @@ export default async function MembresiasPage() {
           return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
         }
 
-        const raw = stripeSub as any
+        const raw = stripeSub as unknown as { current_period_start?: number; billing_cycle_anchor?: number }
         const periodStart: number | null = raw.current_period_start ?? raw.billing_cycle_anchor ?? null
 
         // Calculate next billing as exactly +1 month (or +1 year) from last billing

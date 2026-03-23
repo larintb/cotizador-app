@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 interface Props {
   children: React.ReactNode
   className?: string
+  style?: React.CSSProperties
   delay?: number          // ms
   direction?: 'up' | 'down' | 'left' | 'right' | 'none'
 }
@@ -12,6 +13,7 @@ interface Props {
 export default function AnimateIn({
   children,
   className = '',
+  style,
   delay = 0,
   direction = 'up',
 }: Props) {
@@ -42,6 +44,7 @@ export default function AnimateIn({
       ref={ref}
       className={className}
       style={{
+        ...style,
         opacity:    visible ? 1 : 0,
         transform:  visible ? 'none' : translate[direction],
         transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
