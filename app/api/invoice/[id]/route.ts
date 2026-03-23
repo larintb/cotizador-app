@@ -38,7 +38,7 @@ export async function GET(
     .page { width: 215.9mm; min-height: 279.4mm; display: flex; flex-direction: column; }
 
     /* Header */
-    .header { background: #000; color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .header { background: #4b5563; color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: flex-start; }
     .logo-a1 { display: inline-block; background: #10B981; color: #fff; font-weight: 900; font-size: 16px; padding: 4px 10px; margin-bottom: 4px; }
     .logo-name { font-weight: 900; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; }
     .logo-sub { font-size: 9px; color: #9ca3af; letter-spacing: 0.2em; text-transform: uppercase; }
@@ -48,9 +48,9 @@ export async function GET(
     .order-date { font-size: 9px; color: #9ca3af; margin-top: 3px; }
 
     /* Vehicle bar */
-    .vehicle-bar { background: #1f2937; color: #fff; padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .vehicle-bar { background: #9ca3af; color: #fff; padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
     .vehicle-name { font-size: 14px; font-weight: 900; }
-    .vehicle-vin { font-size: 9px; color: #9ca3af; letter-spacing: 0.1em; font-family: monospace; }
+    .vehicle-vin { font-size: 9px; color: #f3f4f6; letter-spacing: 0.1em; font-family: monospace; }
 
     /* Section */
     .section { margin-bottom: 12px; border: 1.5px solid #e5e7eb; margin-left: 16px; margin-right: 16px; }

@@ -37,7 +37,7 @@ export async function GET(
     body { font-family: Arial, Helvetica, sans-serif; background: #fff; color: #000; font-size: 12px; width: 215.9mm; min-height: 279.4mm; }
     .page { width: 215.9mm; min-height: 279.4mm; display: flex; flex-direction: column; }
 
-    .header { background: #000; color: #fff; padding: 20px 28px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .header { background: #4b5563; color: #fff; padding: 20px 28px; display: flex; justify-content: space-between; align-items: flex-start; }
     .logo-a1 { display: inline-block; background: #10B981; color: #fff; font-weight: 900; font-size: 18px; padding: 5px 11px; margin-bottom: 5px; }
     .logo-name { font-weight: 900; font-size: 14px; letter-spacing: 0.15em; text-transform: uppercase; }
     .logo-sub { font-size: 9px; color: #9ca3af; letter-spacing: 0.2em; text-transform: uppercase; }
@@ -46,9 +46,9 @@ export async function GET(
     .order-number { font-size: 22px; font-weight: 900; letter-spacing: 0.1em; }
     .order-date { font-size: 10px; color: #9ca3af; margin-top: 4px; }
 
-    .vehicle-bar { background: #1f2937; color: #fff; padding: 14px 28px; margin-bottom: 40px; }
+    .vehicle-bar { background: #9ca3af; color: #fff; padding: 14px 28px; margin-bottom: 40px; }
     .vehicle-name { font-size: 16px; font-weight: 900; margin-bottom: 4px; }
-    .vehicle-vin { font-size: 10px; color: #9ca3af; letter-spacing: 0.1em; font-family: monospace; }
+    .vehicle-vin { font-size: 10px; color: #f3f4f6; letter-spacing: 0.1em; font-family: monospace; }
 
     .content { padding: 0 28px; flex: 1; }
 
