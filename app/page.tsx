@@ -76,7 +76,7 @@ export default async function LandingPage() {
       <section className="relative flex flex-col items-center justify-center text-center px-6 py-32 overflow-hidden">
         {/* BG image */}
         <div className="absolute inset-0" style={{ zIndex: 0 }}>
-          <img src="/images/background.png" alt="" className="w-full h-full object-cover" style={{ opacity: 0.07 }} />
+          <Image src="/images/background.png" alt="" fill className="object-cover" style={{ opacity: 0.07 }} />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, #0D1117bb, #0D1117)' }} />
         </div>
 
@@ -250,7 +250,7 @@ export default async function LandingPage() {
           </AnimateIn>
 
           <AnimateIn direction="right" delay={150} className="flex-1">
-            <img src="/images/hero_arancela.png" alt="Arancela" className="w-full h-auto object-contain" />
+            <Image src="/images/hero_arancela.png" alt="Arancela" width={600} height={400} className="w-full h-auto object-contain" />
           </AnimateIn>
 
         </div>
@@ -290,7 +290,7 @@ export default async function LandingPage() {
       {/* ── CTA final ──────────────────────────────────────── */}
       <section className="px-6 py-24 text-center" style={{ background: '#0D1117', borderTop: '1px solid #21262D' }}>
         <AnimateIn direction="up" className="max-w-2xl mx-auto flex flex-col items-center">
-          <img src="/images/logo_arancela.png" alt="Arancela" className="h-10 w-auto object-contain mb-10" />
+          <Image src="/images/logo_arancela.png" alt="Arancela" width={160} height={40} className="h-10 w-auto object-contain mb-10" style={{ filter: 'brightness(0) invert(1)' }} />
           <h2 className="font-black uppercase tracking-tight mb-4" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
             Empieza hoy.
           </h2>
@@ -309,7 +309,7 @@ export default async function LandingPage() {
 
       {/* ── Footer ─────────────────────────────────────────── */}
       <footer className="py-6 px-6 flex items-center justify-center gap-6" style={{ borderTop: '1px solid #21262D', background: '#0D1117' }}>
-        <img src="/images/logo2_arancela.png" alt="Arancela" className="h-5 w-auto object-contain" style={{ opacity: 0.3 }} />
+        <Image src="/images/logo2_arancela.png" alt="Arancela" width={80} height={20} className="h-5 w-auto object-contain" style={{ opacity: 0.3 }} />
         <p className="text-xs uppercase tracking-widest" style={{ color: '#374151' }}>
           © {new Date().getFullYear()} Arancela
         </p>

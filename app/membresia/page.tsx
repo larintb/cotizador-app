@@ -102,7 +102,6 @@ export default async function MembresiasPage() {
   }
 
   const isActive  = sub?.status === 'active' || sub?.status === 'trialing'
-  const isPastDue = sub?.status === 'past_due'
   const hasStripe = !!profile.stripe_customer_id
 
   const STATUS_CONFIG = {
@@ -256,7 +255,7 @@ export default async function MembresiasPage() {
       </main>
 
       <footer className="py-6 px-6 flex items-center justify-center gap-6" style={{ borderTop: '1px solid #21262D' }}>
-        <img src="/images/logo2_arancela.png" alt="Arancela" className="h-5 w-auto object-contain" style={{ opacity: 0.3 }} />
+        <Image src="/images/logo2_arancela.png" alt="Arancela" width={80} height={20} className="h-5 w-auto object-contain" style={{ opacity: 0.3 }} />
         <p className="text-xs uppercase tracking-widest" style={{ color: '#374151' }}>
           © {new Date().getFullYear()} Arancela
         </p>

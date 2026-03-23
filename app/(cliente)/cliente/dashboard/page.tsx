@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Loader2, AlertCircle, CheckCircle, Banknote, Car, Calendar } from 'lucide-react'
+import { Search, Loader2, AlertCircle, Banknote, Car, Calendar } from 'lucide-react'
 import { buscarPorOrden } from '@/app/actions/cotizaciones'
 import { fmt, redondear500, STATUS_LABELS, PROCESS_LABELS } from '@/lib/utils'
 

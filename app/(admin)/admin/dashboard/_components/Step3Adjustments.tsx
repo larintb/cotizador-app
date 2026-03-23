@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { SlidersHorizontal, ChevronLeft, ArrowRight, AlertCircle } from 'lucide-react'
+import { SlidersHorizontal, ChevronLeft, ArrowRight } from 'lucide-react'
 
 interface Props {
   selectedProcess: string

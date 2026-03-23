@@ -8,25 +8,6 @@ import { createCheckoutSession } from '@/app/actions/stripe'
 import NavAccount from '@/app/_components/NavAccount'
 import SuccessCelebration from '@/app/_components/SuccessCelebration'
 
-const FEATURES = [
-  // Cotizador
-  'Cotizaciones ilimitadas de importación vehicular',
-  'Cálculo automático de DTA, IGI, IVA y honorarios',
-  'Consulta de VIN en tiempo real vía NHTSA',
-  'Los 4 procesos: Definitiva, Amparo, VU y VF',
-  // Clientes
-  'Portal de clientes con número de orden único',
-  'Trackeador de estatus por cotización',
-  'Notificaciones por correo al cliente',
-  // Base de datos
-  'Base de datos en la nube (Supabase)',
-  'Historial completo de cotizaciones',
-  'Acceso desde cualquier dispositivo',
-  // Soporte
-  'Soporte técnico incluido',
-  'Orientación a personal del agente',
-  'Actualizaciones de aranceles sin costo adicional',
-]
 
 export default async function PlanesPage() {
   const supabase = await createClient()
@@ -225,7 +206,7 @@ export default async function PlanesPage() {
 
       {/* Footer */}
       <footer className="py-6 px-6 flex items-center justify-center gap-6" style={{ borderTop: '1px solid #21262D', background: '#0D1117' }}>
-        <img src="/images/logo2_arancela.png" alt="Arancela" className="h-5 w-auto object-contain" style={{ opacity: 0.3 }} />
+        <Image src="/images/logo2_arancela.png" alt="Arancela" width={80} height={20} className="h-5 w-auto object-contain" style={{ opacity: 0.3 }} />
         <p className="text-xs uppercase tracking-widest" style={{ color: '#374151' }}>
           © {new Date().getFullYear()} Arancela
         </p>

@@ -10,8 +10,7 @@ import {
   sendPaymentFailedEmail,
 } from '@/lib/email'
 
-const MONTHLY_PRICE_ID = process.env.STRIPE_PRICE_MONTHLY_ID
-const ANNUAL_PRICE_ID  = process.env.STRIPE_PRICE_ANNUAL_ID
+const ANNUAL_PRICE_ID = process.env.STRIPE_PRICE_ANNUAL_ID
 
 type StripeSub     = { current_period_end: number; current_period_start: number }
 type StripeInvoice = {
