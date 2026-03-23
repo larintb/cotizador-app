@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import Counter from './_components/Counter'
 import NavAccount from './_components/NavAccount'
 import Silk from './_components/Silk'
+import DarkVeil from './_components/DarkVeil'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function LandingPage() {
@@ -137,8 +138,12 @@ export default async function LandingPage() {
       </section>
 
       {/* ── Flujo VIN → PRECIO → COTIZACIÓN ───────────────── */}
-      <section className="px-6 py-24" style={{ background: '#0D1117' }}>
-        <div className="max-w-5xl mx-auto text-center">
+      <section className="relative px-6 py-24" style={{ background: '#0D1117' }}>
+        <div className="absolute inset-0" style={{ zIndex: 0 }}>
+          <DarkVeil speed={0.5} hueShift={140} noiseIntensity={0.05} warpAmount={0.3} />
+          <div className="absolute inset-0" style={{ background: 'rgba(13,17,23,0.7)' }} />
+        </div>
+        <div className="relative max-w-5xl mx-auto text-center" style={{ zIndex: 1 }}>
 
           <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#10B981' }}>Así de simple</p>
           <h2 className="font-black uppercase tracking-tight mb-16" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>
