@@ -32,76 +32,74 @@ export async function GET(
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cotización ${cotizacion.order_number} — Arancela</title>
   <style>
+    @page { size: letter; margin: 0; }
     * { margin: 0; padding: 0; box-sizing: border-box; border-radius: 0 !important; }
-    body { font-family: Arial, Helvetica, sans-serif; background: #fff; color: #000; font-size: 13px; }
-    .page { max-width: 800px; margin: 0 auto; padding: 32px; }
+    body { font-family: Arial, Helvetica, sans-serif; background: #fff; color: #000; font-size: 11px; width: 215.9mm; min-height: 279.4mm; }
+    .page { width: 215.9mm; min-height: 279.4mm; display: flex; flex-direction: column; }
 
     /* Header */
-    .header { background: #000; color: #fff; padding: 24px 32px; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0; }
-    .logo-block {}
-    .logo-a1 { display: inline-block; background: #10B981; color: #fff; font-weight: 900; font-size: 20px; padding: 6px 12px; margin-bottom: 6px; }
-    .logo-name { font-weight: 900; font-size: 16px; letter-spacing: 0.15em; text-transform: uppercase; }
-    .logo-sub { font-size: 10px; color: #9ca3af; letter-spacing: 0.2em; text-transform: uppercase; }
+    .header { background: #000; color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .logo-a1 { display: inline-block; background: #10B981; color: #fff; font-weight: 900; font-size: 16px; padding: 4px 10px; margin-bottom: 4px; }
+    .logo-name { font-weight: 900; font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; }
+    .logo-sub { font-size: 9px; color: #9ca3af; letter-spacing: 0.2em; text-transform: uppercase; }
     .order-block { text-align: right; }
-    .order-label { font-size: 10px; color: #9ca3af; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 4px; }
-    .order-number { font-size: 24px; font-weight: 900; letter-spacing: 0.1em; }
-    .order-date { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+    .order-label { font-size: 9px; color: #9ca3af; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 3px; }
+    .order-number { font-size: 20px; font-weight: 900; letter-spacing: 0.1em; }
+    .order-date { font-size: 9px; color: #9ca3af; margin-top: 3px; }
 
     /* Vehicle bar */
-    .vehicle-bar { background: #1f2937; color: #fff; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .vehicle-name { font-size: 18px; font-weight: 900; }
-    .vehicle-vin { font-size: 11px; color: #9ca3af; letter-spacing: 0.1em; font-family: monospace; }
+    .vehicle-bar { background: #1f2937; color: #fff; padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .vehicle-name { font-size: 14px; font-weight: 900; }
+    .vehicle-vin { font-size: 9px; color: #9ca3af; letter-spacing: 0.1em; font-family: monospace; }
 
     /* Section */
-    .section { margin-bottom: 20px; border: 2px solid #e5e7eb; }
-    .section-header { background: #f9fafb; border-bottom: 1px solid #e5e7eb; padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
-    .section-stripe { width: 3px; height: 16px; background: #10B981; flex-shrink: 0; }
-    .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #4b5563; }
+    .section { margin-bottom: 12px; border: 1.5px solid #e5e7eb; margin-left: 16px; margin-right: 16px; }
+    .section-header { background: #f9fafb; border-bottom: 1px solid #e5e7eb; padding: 7px 12px; display: flex; align-items: center; gap: 6px; }
+    .section-stripe { width: 3px; height: 13px; background: #10B981; flex-shrink: 0; }
+    .section-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #4b5563; }
 
     /* Row */
-    .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid #f3f4f6; }
+    .row { display: flex; justify-content: space-between; align-items: center; padding: 7px 12px; border-bottom: 1px solid #f3f4f6; }
     .row:last-child { border-bottom: none; }
-    .row-label { font-size: 13px; font-weight: 600; color: #000; }
-    .row-sublabel { font-size: 11px; color: #9ca3af; margin-left: 6px; }
-    .row-value { font-size: 13px; font-weight: 700; color: #000; font-variant-numeric: tabular-nums; }
+    .row-label { font-size: 11px; font-weight: 600; color: #000; }
+    .row-sublabel { font-size: 9px; color: #9ca3af; margin-left: 4px; }
+    .row-value { font-size: 11px; font-weight: 700; color: #000; font-variant-numeric: tabular-nums; }
     .row-base { background: #f9fafb; }
-    .row-base .row-label, .row-base .row-value { font-size: 12px; color: #6b7280; font-weight: 600; }
+    .row-base .row-label, .row-base .row-value { font-size: 10px; color: #6b7280; font-weight: 600; }
     .row-highlight { background: #f3f4f6; }
-    .row-highlight .row-label, .row-highlight .row-value { font-weight: 700; font-size: 13px; }
+    .row-highlight .row-label, .row-highlight .row-value { font-weight: 700; font-size: 11px; }
 
     /* Subtotal */
-    .subtotal { display: flex; justify-content: space-between; padding: 12px 16px; background: #f9fafb; border-top: 2px solid #e5e7eb; font-weight: 700; font-size: 14px; }
+    .subtotal { display: flex; justify-content: space-between; padding: 8px 12px; background: #f9fafb; border-top: 1.5px solid #e5e7eb; font-weight: 700; font-size: 12px; }
 
     /* Total box */
-    .total-box { margin-bottom: 20px; border: 2px solid #10B981; }
-    .total-exact { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #10B981; }
-    .total-exact-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #6b7280; margin-bottom: 4px; }
-    .total-exact-value { font-size: 22px; font-weight: 900; color: #000; }
-    .total-rounded { padding: 16px 20px; background: #10B981; display: flex; justify-content: space-between; align-items: center; }
-    .total-rounded-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.8); margin-bottom: 4px; }
-    .total-rounded-value { font-size: 28px; font-weight: 900; color: #fff; }
+    .total-box { margin: 0 16px 12px 16px; border: 2px solid #10B981; }
+    .total-exact { padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #10B981; }
+    .total-exact-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #6b7280; margin-bottom: 2px; }
+    .total-exact-value { font-size: 18px; font-weight: 900; color: #000; }
+    .total-rounded { padding: 10px 16px; background: #10B981; display: flex; justify-content: space-between; align-items: center; }
+    .total-rounded-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.8); margin-bottom: 2px; }
+    .total-rounded-value { font-size: 22px; font-weight: 900; color: #fff; }
 
     /* Process badge */
-    .process-badge { display: inline-block; background: #000; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; padding: 3px 8px; }
-    .status-badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 3px 8px; border: 1px solid currentColor; }
+    .process-badge { display: inline-block; background: #000; color: #fff; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; padding: 2px 7px; }
 
-    /* Info row */
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .info-item { border: 1px solid #e5e7eb; padding: 12px; }
-    .info-item-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #6b7280; margin-bottom: 4px; }
-    .info-item-value { font-size: 14px; font-weight: 700; color: #000; }
+    /* Info grid */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 16px 12px 16px; }
+    .info-item { border: 1px solid #e5e7eb; padding: 8px 10px; }
+    .info-item-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #6b7280; margin-bottom: 3px; }
+    .info-item-value { font-size: 12px; font-weight: 700; color: #000; }
 
     /* Disclaimer */
-    .disclaimer { padding: 14px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 11px; color: #6b7280; line-height: 1.6; margin-bottom: 20px; }
+    .disclaimer { margin: 0 16px 12px 16px; padding: 10px 12px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 9px; color: #6b7280; line-height: 1.5; }
 
     /* Footer */
-    .footer { border-top: 2px solid #000; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; }
-    .footer-logo { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; }
-    .footer-note { font-size: 10px; color: #9ca3af; }
+    .footer { margin: 0 16px; border-top: 2px solid #000; padding-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .footer-logo { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; }
+    .footer-note { font-size: 9px; color: #9ca3af; }
 
     @media print {
-      .page { padding: 0; }
-      body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
   </style>
 </head>
