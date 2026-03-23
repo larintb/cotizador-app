@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { CheckCircle2, AlertCircle, Clock, CreditCard, ArrowRight, ExternalLink, XCircle } from 'lucide-react'
+import { CheckCircle2, AlertCircle, CreditCard, ArrowRight, ExternalLink, XCircle } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getStripe } from '@/lib/stripe'
 import { createPortalSession } from '@/app/actions/stripe'
@@ -174,22 +174,23 @@ export default async function MembresiasPage() {
                   <Row label="Plan"          value={sub.plan} />
                   <Row label="Monto"         value={sub.amount} />
                   <Row label="Frecuencia"    value={`Cada ${sub.interval}`} />
-                  <Row label="Último cobro"  value={sub.lastBilling} />
+                  <Row label="Último cobro" value={sub.lastBilling} />
                   <Row
-                    label={sub.cancelAtPeriodEnd ? 'Acceso hasta' : 'Próximo cobro'}
+                    label={sub.cancelAtPeriodEnd ? 'Suscripción hasta' : 'Próximo cobro'}
                     value={sub.cancelAtPeriodEnd && sub.cancelAt ? sub.cancelAt : sub.nextBilling}
                     highlight={isActive && !sub.cancelAtPeriodEnd}
+                    danger={sub.cancelAtPeriodEnd}
                   />
 
                   {sub.cancelAtPeriodEnd && (
                     <div
                       className="flex items-start gap-3 p-4 mt-4"
-                      style={{ background: '#1c1200', border: '1px solid #F59E0B' }}
+                      style={{ background: '#1a0a0a', border: '1px solid #EF4444' }}
                     >
-                      <Clock size={14} style={{ color: '#F59E0B', flexShrink: 0, marginTop: 2 }} />
-                      <p className="text-xs" style={{ color: '#F59E0B', lineHeight: 1.6 }}>
-                        Tu suscripción fue cancelada y seguirá activa hasta el{' '}
-                        <strong>{sub.cancelAt}</strong>. Puedes reactivarla antes de esa fecha.
+                      <XCircle size={14} style={{ color: '#EF4444', flexShrink: 0, marginTop: 2 }} />
+                      <p className="text-xs" style={{ color: '#EF4444', lineHeight: 1.6 }}>
+                        Tu membresía fue cancelada. Acceso disponible hasta <strong>{sub.cancelAt}</strong>.
+                        Reactiva tu plan para seguir cotizando.
                       </p>
                     </div>
                   )}
@@ -203,7 +204,28 @@ export default async function MembresiasPage() {
           </div>
 
           {/* Actions */}
-          {hasStripe ? (
+          {sub?.cancelAtPeriodEnd ? (
+            /* Cancelled — push to re-subscribe */
+            <div className="space-y-3">
+              <Link
+                href="/planes"
+                className="w-full flex items-center justify-center gap-2 py-4 font-black text-sm uppercase tracking-widest text-white transition-all hover:opacity-90"
+                style={{ background: '#10B981', display: 'flex' }}
+              >
+                Reactivar membresía <ArrowRight size={16} />
+              </Link>
+              <form action={createPortalSession}>
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 py-3 font-bold text-xs uppercase tracking-widest transition-all hover:border-white hover:text-white"
+                  style={{ border: '1px solid #21262D', color: '#64748B' }}
+                >
+                  <ExternalLink size={12} />
+                  Gestionar desde el portal
+                </button>
+              </form>
+            </div>
+          ) : hasStripe ? (
             <div className="space-y-3">
               <form action={createPortalSession}>
                 <button
@@ -230,18 +252,6 @@ export default async function MembresiasPage() {
             </Link>
           )}
 
-          {!isActive && hasStripe && (
-            <div className="mt-4">
-              <Link
-                href="/planes"
-                className="w-full flex items-center justify-center gap-2 py-4 font-bold text-sm uppercase tracking-widest transition-all hover:border-[#10B981] hover:text-[#10B981]"
-                style={{ border: '1px solid #21262D', color: '#64748B', display: 'flex' }}
-              >
-                Ver planes <ArrowRight size={14} />
-              </Link>
-            </div>
-          )}
-
         </div>
       </main>
 
@@ -255,13 +265,14 @@ export default async function MembresiasPage() {
   )
 }
 
-function Row({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function Row({ label, value, highlight, danger }: { label: string; value: string; highlight?: boolean; danger?: boolean }) {
+  const color = danger ? '#EF4444' : highlight ? '#10B981' : '#ffffff'
   return (
     <div className="flex items-center justify-between py-3" style={{ borderBottom: '1px solid #21262D' }}>
-      <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#64748B' }}>
+      <span className="text-xs font-bold uppercase tracking-widest" style={{ color: danger ? '#EF4444' : '#64748B' }}>
         {label}
       </span>
-      <span className="text-sm font-bold" style={{ color: highlight ? '#10B981' : '#ffffff' }}>
+      <span className="text-sm font-bold" style={{ color }}>
         {value}
       </span>
     </div>
