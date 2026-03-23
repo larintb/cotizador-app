@@ -54,8 +54,8 @@ export default function LoginPage() {
 
             <form action={formAction} className="p-6 space-y-5">
               {state?.error && (
-                <div className="p-4 border-l-4 border-[#10B981] bg-emerald-50">
-                  <p className="text-sm font-bold text-[#10B981]">{state.error}</p>
+                <div className="p-4 border-l-4 border-red-500 bg-red-50">
+                  <p className="text-sm font-bold text-red-600">{state.error}</p>
                 </div>
               )}
 
