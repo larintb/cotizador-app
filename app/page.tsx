@@ -277,8 +277,8 @@ export default async function LandingPage() {
           </AnimateIn>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-px" style={{ background: '#21262D' }}>
             {[
-              { title: 'Importación Definitiva', igi: 'IGI 50%', desc: 'Proceso estándar. Todos los vehículos.', delay: 0 },
-              { title: 'Proceso de Amparo Legal', igi: 'IGI 50%', desc: 'VINs de EE.UU. y Canadá (1, 2, 4 o 5).', delay: 100 },
+              { title: 'Importación Definitiva A1', igi: 'IGI 50%', desc: 'Proceso estándar. Todos los vehículos.', delay: 0 },
+              { title: 'Proceso de Amparo Legal', igi: 'IGI 10%', desc: 'VINs de EE.UU. y Canadá (1, 2, 4 o 5).', delay: 100 },
               { title: 'Procedimiento VU', igi: 'IGI 10%', desc: 'Modelos 2017 y 2018.', delay: 200 },
               { title: 'Procedimiento VF', igi: 'IGI 10% / 1%', desc: 'Modelos 2016 a 2021.', delay: 300 },
             ].map(p => (
