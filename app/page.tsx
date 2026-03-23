@@ -29,7 +29,7 @@ export default async function LandingPage() {
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/">
             <Image
-              src="/images/logo2_white-removebg-preview.png"
+              src="https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo2_white-removebg-preview.png"
               alt="Arancela"
               width={140}
               height={36}
@@ -75,7 +75,7 @@ export default async function LandingPage() {
       <section className="relative flex flex-col items-center justify-center text-center px-6 py-32 overflow-hidden">
         {/* BG image */}
         <div className="absolute inset-0" style={{ zIndex: 0 }}>
-          <Image src="/images/background.png" alt="" fill className="object-cover" style={{ opacity: 0.07 }} />
+          <Image src="https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/background.png" alt="" fill className="object-cover" style={{ opacity: 0.07 }} />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, #0D1117bb, #0D1117)' }} />
         </div>
 
@@ -249,7 +249,7 @@ export default async function LandingPage() {
           </AnimateIn>
 
           <AnimateIn direction="right" delay={150} className="flex-1">
-            <Image src="/images/hero_arancela.png" alt="Arancela" width={600} height={400} className="w-full h-auto object-contain" />
+            <Image src="https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/hero_arancela.png" alt="Arancela" width={600} height={400} className="w-full h-auto object-contain" />
           </AnimateIn>
 
         </div>
@@ -307,7 +307,7 @@ export default async function LandingPage() {
 
       {/* ── Footer ─────────────────────────────────────────── */}
       <footer className="py-6 px-6 flex items-center justify-center gap-6" style={{ borderTop: '1px solid #21262D', background: '#0D1117' }}>
-        <Image src="/images/logo2_white-removebg-preview.png" alt="Arancela" width={80} height={20} className="h-5 w-auto object-contain" style={{ opacity: 0.3 }} />
+        <Image src="https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo2_white-removebg-preview.png" alt="Arancela" width={80} height={20} className="h-5 w-auto object-contain" style={{ opacity: 0.3 }} />
         <p className="text-xs uppercase tracking-widest" style={{ color: '#374151' }}>
           © {new Date().getFullYear()} Arancela
         </p>

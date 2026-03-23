@@ -31,7 +31,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
           <div className="flex items-center gap-6">
             <Link href="/">
               <Image
-                src="/images/logo2_white-removebg-preview.png"
+                src="https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo2_white-removebg-preview.png"
                 alt="Arancela"
                 width={120}
                 height={32}

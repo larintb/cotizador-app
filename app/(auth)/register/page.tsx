@@ -23,7 +23,7 @@ export default function RegisterPage() {
       <header className="bg-black text-white px-6 py-4">
         <Link href="/" className="w-fit block">
           <Image
-            src="/images/logo2_white-removebg-preview.png"
+            src="https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo2_white-removebg-preview.png"
             alt="Arancela"
             width={120}
             height={32}
@@ -34,7 +34,7 @@ export default function RegisterPage() {
 
       <div
         className="flex-1 flex items-center justify-center px-4 py-12"
-        style={{ backgroundImage: 'url(/images/background.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}
+        style={{ backgroundImage: 'url(https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/background.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
         <div className="w-full max-w-lg">
           <div className="bg-white border-2 border-gray-200 shadow-xl">

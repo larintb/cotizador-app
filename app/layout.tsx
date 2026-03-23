@@ -14,14 +14,14 @@ export const metadata: Metadata = {
   description:
     'Plataforma profesional de cotización de importación de vehículos. Calcula DTA, IGI, IVA y honorarios en segundos.',
   icons: {
-    icon: '/images/logo_bg.png',
-    shortcut: '/images/logo_bg.png',
-    apple: '/images/logo_bg.png',
+    icon: 'https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo_bg.png',
+    shortcut: 'https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo_bg.png',
+    apple: 'https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo_bg.png',
   },
   openGraph: {
     title: 'Arancela — Cotizador de Importación Vehicular',
     description: 'Plataforma profesional de cotización de importación de vehículos.',
-    images: [{ url: '/images/logo2_white.png', width: 600, height: 600 }],
+    images: [{ url: 'https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo2_white.png', width: 600, height: 600 }],
   },
 }
 

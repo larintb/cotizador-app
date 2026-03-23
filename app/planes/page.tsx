@@ -61,7 +61,7 @@ export default async function PlanesPage() {
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/">
             <Image
-              src="/images/logo2_white-removebg-preview.png"
+              src="https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo2_white-removebg-preview.png"
               alt="Arancela"
               width={140}
               height={36}
@@ -205,7 +205,7 @@ export default async function PlanesPage() {
 
       {/* Footer */}
       <footer className="py-6 px-6 flex items-center justify-center gap-6" style={{ borderTop: '1px solid #21262D', background: '#0D1117' }}>
-        <Image src="/images/logo2_white-removebg-preview.png" alt="Arancela" width={80} height={20} className="h-5 w-auto object-contain" style={{ opacity: 0.3 }} />
+        <Image src="https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo2_white-removebg-preview.png" alt="Arancela" width={80} height={20} className="h-5 w-auto object-contain" style={{ opacity: 0.3 }} />
         <p className="text-xs uppercase tracking-widest" style={{ color: '#374151' }}>
           © {new Date().getFullYear()} Arancela
         </p>

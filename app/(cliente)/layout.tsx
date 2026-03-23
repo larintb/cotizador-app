@@ -33,7 +33,7 @@ export default async function ClienteLayout({ children }: { children: React.Reac
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/">
             <Image
-              src="/images/logo2_white-removebg-preview.png"
+              src="https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/logo2_white-removebg-preview.png"
               alt="Arancela"
               width={120}
               height={32}
