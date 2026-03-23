@@ -5,6 +5,7 @@ import Counter from './_components/Counter'
 import NavAccount from './_components/NavAccount'
 import Silk from './_components/Silk'
 import DarkVeil from './_components/DarkVeil'
+import Particles from './_components/Particles'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function LandingPage() {
@@ -79,7 +80,7 @@ export default async function LandingPage() {
       >
         {/* Silk background */}
         <div className="absolute inset-0" style={{ zIndex: 0 }}>
-          <Silk speed={10} scale={0.8} color="#7B7481" noiseIntensity={1.5} rotation={0} />
+          <Silk speed={10} scale={1.2} color="#7B7481" noiseIntensity={1.5} rotation={0} />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, #0D111766, #0D1117)' }} />
         </div>
 
@@ -140,12 +141,12 @@ export default async function LandingPage() {
       {/* ── Flujo VIN → PRECIO → COTIZACIÓN ───────────────── */}
       <section className="relative px-6 py-24" style={{ background: '#0D1117' }}>
         <div className="absolute inset-0" style={{ zIndex: 0 }}>
-          <DarkVeil speed={0.5} hueShift={140} noiseIntensity={0.05} warpAmount={0.3} />
+          <DarkVeil hueShift={0} noiseIntensity={0} scanlineIntensity={0} speed={0.5} scanlineFrequency={0} warpAmount={0} resolutionScale={1} />
           <div className="absolute inset-0" style={{ background: 'rgba(13,17,23,0.7)' }} />
         </div>
         <div className="relative max-w-5xl mx-auto text-center" style={{ zIndex: 1 }}>
 
-          <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#10B981' }}>Así de simple</p>
+          <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#7B7481' }}>Así de simple</p>
           <h2 className="font-black uppercase tracking-tight mb-16" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>
             Tres pasos. Un resultado.
           </h2>
@@ -231,8 +232,22 @@ export default async function LandingPage() {
       </section>
 
       {/* ── Hero image + copy ──────────────────────────────── */}
-      <section className="px-6 py-24" style={{ background: '#0D1117' }}>
-        <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+      <section className="relative px-6 py-24" style={{ background: '#0D1117' }}>
+        <div className="absolute inset-0" style={{ zIndex: 0 }}>
+          <Particles
+            particleCount={120}
+            particleSpread={8}
+            speed={0.08}
+            particleColors={['#10B981', '#6b7280', '#ffffff']}
+            alphaParticles
+            particleBaseSize={80}
+            sizeRandomness={0.8}
+            cameraDistance={22}
+            moveParticlesOnHover
+            particleHoverFactor={0.3}
+          />
+        </div>
+        <div className="relative max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-16" style={{ zIndex: 1 }}>
 
           <div className="flex-1">
             <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#10B981' }}>
