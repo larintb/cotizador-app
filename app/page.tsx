@@ -110,22 +110,32 @@ export default async function LandingPage() {
 
           <AnimateIn direction="up" delay={340}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href={profile
-                  ? ({ admin: '/admin/dashboard', superadmin: '/superadmin/usuarios', cliente: '/cliente/dashboard' }[profile.role])
-                  : '/register'}
-                className="inline-flex items-center justify-center gap-3 px-10 py-5 font-black text-sm uppercase tracking-widest text-white transition-all duration-200 hover:opacity-90"
-                style={{ background: '#10B981' }}
-              >
-                Comenzar ahora <ArrowRight size={18} />
-              </Link>
-              <Link
-                href="/login"
-                className="inline-flex items-center justify-center gap-3 px-10 py-5 font-bold text-sm uppercase tracking-widest transition-all duration-200 hover:border-[#10B981] hover:text-[#059669]"
-                style={{ border: '2px solid #21262D', color: '#94A3B8' }}
-              >
-                Ya tengo cuenta
-              </Link>
+              {profile ? (
+                <Link
+                  href={{ admin: '/admin/dashboard', superadmin: '/superadmin/usuarios', cliente: '/cliente/dashboard' }[profile.role]}
+                  className="inline-flex items-center justify-center gap-3 px-10 py-5 font-black text-sm uppercase tracking-widest text-white transition-all duration-200 hover:opacity-90"
+                  style={{ background: '#10B981' }}
+                >
+                  Ir a dashboard <ArrowRight size={18} />
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center justify-center gap-3 px-10 py-5 font-black text-sm uppercase tracking-widest text-white transition-all duration-200 hover:opacity-90"
+                    style={{ background: '#10B981' }}
+                  >
+                    Comenzar ahora <ArrowRight size={18} />
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center justify-center gap-3 px-10 py-5 font-bold text-sm uppercase tracking-widest transition-all duration-200 hover:border-[#10B981] hover:text-[#059669]"
+                    style={{ border: '2px solid #21262D', color: '#94A3B8' }}
+                  >
+                    Ya tengo cuenta
+                  </Link>
+                </>
+              )}
             </div>
           </AnimateIn>
         </div>
