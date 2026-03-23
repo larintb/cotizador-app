@@ -72,7 +72,7 @@ export default async function LandingPage() {
       </header>
 
       {/* ── Hero ───────────────────────────────────────────── */}
-      <section className="relative flex flex-col items-center justify-center text-center px-6 py-32 overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center text-center px-6 py-12 overflow-hidden" style={{ minHeight: 'calc(100vh - 65px)' }}>
         {/* BG image */}
         <div className="absolute inset-0" style={{ zIndex: 0 }}>
           <Image src="https://ymdwinyijgkizxpugtxa.supabase.co/storage/v1/object/public/images/background.png" alt="" fill className="object-cover" style={{ opacity: 0.07 }} />
@@ -82,7 +82,7 @@ export default async function LandingPage() {
         <div className="relative max-w-4xl mx-auto" style={{ zIndex: 1 }}>
           <AnimateIn direction="none" delay={0}>
             <div
-              className="inline-flex items-center gap-2 px-3 py-1.5 mb-10"
+              className="inline-flex items-center gap-2 px-3 py-1.5 mb-6"
               style={{ border: '1px solid #10B98133', background: '#10B98111' }}
             >
               <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#10B981' }} />
@@ -103,7 +103,7 @@ export default async function LandingPage() {
           </AnimateIn>
 
           <AnimateIn direction="up" delay={220}>
-            <p className="text-lg max-w-xl mx-auto leading-relaxed mb-12" style={{ color: '#64748B' }}>
+            <p className="text-lg max-w-xl mx-auto leading-relaxed mb-8" style={{ color: '#64748B' }}>
               DTA, IGI, IVA y honorarios calculados con precisión aduanera en segundos.
             </p>
           </AnimateIn>
