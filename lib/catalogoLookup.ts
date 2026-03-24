@@ -257,9 +257,12 @@ export const NHTSA_MODEL_ALIASES: Record<string, Record<string, string>> = {
   },
   // GMC: Suburban fue rebadgeado como Yukon XL en el catálogo
   // "Jimmy Utility" → catálogo tiene "JIMMY-1/2 TON-V6"
+  // "Savana" → van de tamaño completo → catálogo "G 1500 VAN-V8"
   GMC: {
     'SUBURBAN':       'YUKON XL',
     'JIMMY UTILITY':  'JIMMY',
+    'SAVANA':         'G 1500 VAN',
+    'SAVANA CARGO':   'G 1500 VAN',
   },
   // MAZDA: NHTSA devuelve "Mazda6" junto (sin espacio), catálogo tiene "MAZDA 6-..."
   MAZDA: {
@@ -328,8 +331,12 @@ export const NHTSA_MODEL_ALIASES: Record<string, Record<string, string>> = {
     'SANTA FE SPORT': 'SANTA FE',
   },
   // INFINITI: JX35 fue rebadgeado como QX60 en 2014; el catálogo solo tiene QX60
+  // FX35/FX50 → catálogo tiene "FX 35" y "FX 50" (con espacio)
   INFINITI: {
-    'JX35': 'QX60',
+    'JX35':  'QX60',
+    'FX35':  'FX 35',
+    'FX50':  'FX 50',
+    'FX37':  'FX 35',
   },
   // SATURN: SC1/SC2 son parte de la S-Series; el catálogo solo tiene "S SERIES-4 CYL."
   SATURN: {
@@ -350,6 +357,16 @@ export const NHTSA_MODEL_ALIASES: Record<string, Record<string, string>> = {
   FIAT: {
     '500L': '500',
     '500E': '500',
+  },
+  // MINI: NHTSA devuelve el submódelo sin "COOPER" (ej. "Countryman" en lugar de "Cooper Countryman")
+  MINI: {
+    'COUNTRYMAN':  'COOPER COUNTRYMAN',
+    'CLUBMAN':     'COOPER CLUBMAN',
+    'PACEMAN':     'COOPER PACEMAN',
+    'HARDTOP':     'COOPER HARDTOP',
+    'ROADSTER':    'COOPER ROADSTER',
+    'COUPE':       'COOPER COUPE',
+    'CONVERTIBLE': 'COOPER CONVERTIBLE',
   },
   // BMW: NHTSA devuelve número de motor ("530I", "328I") en vez de nombre de serie
   BMW: {
