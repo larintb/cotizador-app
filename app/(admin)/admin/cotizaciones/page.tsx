@@ -89,9 +89,9 @@ export default async function CotizacionesPage() {
                         <td className="px-4 py-4">
                           <p className="font-bold text-sm text-black">{v.year} {v.make} {v.model}</p>
                           <p className="text-xs text-gray-400 mt-0.5 font-mono">{v.vin}</p>
-                          {cot.client_email && (
+                          {cot.client_email ? (
                             <p className="text-xs text-gray-500 mt-0.5">{cot.client_email as string}</p>
-                          )}
+                          ) : null}
                         </td>
                         <td className="px-4 py-4 hidden sm:table-cell">
                           <span className="text-xs font-bold text-gray-600">
