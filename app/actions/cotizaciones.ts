@@ -218,6 +218,16 @@ export async function crearCotizacionPendiente(data: {
 }) {
   const supabase = adminDb()
 
+  // Validar que el agentId sea un perfil con role='admin' (no superadmin, no cliente)
+  const { data: agentProfile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', data.agentId)
+    .eq('role', 'admin')
+    .single()
+
+  if (!agentProfile) return { error: 'Agente no válido.' }
+
   let order_number = generateOrderNumber()
   let attempts = 0
   while (attempts < 5) {

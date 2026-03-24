@@ -3,6 +3,7 @@ import { fmt, redondear500, ESTATUSES, STATUS_LABELS, PROCESS_LABELS } from '@/l
 import { ClipboardList, Calendar, FileText, User, Clock } from 'lucide-react'
 import StatusChanger from './_components/StatusChanger'
 import AcceptButton from './_components/AcceptButton'
+import PhotoViewer from './_components/PhotoViewer'
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('es-MX', {
@@ -94,9 +95,7 @@ export default async function CotizacionesPage() {
                           ) : null}
                         </td>
                         <td className="px-4 py-4 hidden sm:table-cell">
-                          <span className="text-xs font-bold text-gray-600">
-                            {photos.length} / 7 fotos
-                          </span>
+                          <PhotoViewer urls={photos} />
                         </td>
                         <td className="px-4 py-4 hidden sm:table-cell">
                           <span className="text-xs text-gray-500 flex items-center gap-1.5">
@@ -151,6 +150,7 @@ export default async function CotizacionesPage() {
                 {active.map((cot: Record<string, unknown>) => {
                   const v = cot.vehicle_data as Record<string, string>
                   const r = cot.result as Record<string, number> | null
+                  const photos = (cot.photo_urls as string[] | null) ?? []
                   return (
                     <tr key={cot.id as string} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-4">
@@ -187,7 +187,8 @@ export default async function CotizacionesPage() {
                         </span>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {photos.length > 0 && <PhotoViewer urls={photos} />}
                           <StatusChanger
                             id={cot.id as string}
                             currentStatus={cot.status as string}
