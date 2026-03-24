@@ -109,7 +109,7 @@ export default function StepAmparoPhotos({ vin, onNext, onBack }: Props) {
           next[r.index] = {
             ...next[r.index],
             uploadStatus: 'error',
-            error: r.error.length > 60 ? r.error.slice(0, 60) + '…' : r.error,
+            error: (r.error ?? '').length > 60 ? (r.error ?? '').slice(0, 60) + '…' : (r.error ?? 'Error'),
           }
         } else {
           next[r.index] = { ...next[r.index], uploadStatus: 'done', error: undefined }
