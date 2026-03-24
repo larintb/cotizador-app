@@ -3,7 +3,7 @@
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { generateOrderNumber, PROCESS_LABELS } from '@/lib/utils'
 import { revalidatePath } from 'next/cache'
-import { sendOrderCreatedEmail } from '@/lib/email'
+import { sendOrderCreatedEmail, sendAmparoAceptadoEmail } from '@/lib/email'
 
 export async function crearCotizacion(data: {
   vehicleData: Record<string, string>
@@ -185,6 +185,107 @@ export async function actualizarRolUsuario(userId: string, role: string) {
   if (error) return { error: error.message }
 
   revalidatePath('/superadmin/usuarios')
+  return { success: true }
+}
+
+// ─── Amparo Pendiente ────────────────────────────────────────────────────────
+
+export async function getAdmins() {
+  const supabase = await createServiceClient()
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, nombre, apellido')
+    .eq('role', 'admin')
+    .order('nombre', { ascending: true })
+  if (error) return { error: error.message, admins: [] }
+  return { admins: data ?? [] }
+}
+
+export async function crearCotizacionPendiente(data: {
+  vehicleData: Record<string, string>
+  photoUrls: string[]
+  agentId: string
+  clientEmail: string
+}) {
+  const supabase = await createServiceClient()
+
+  let order_number = generateOrderNumber()
+  let attempts = 0
+  while (attempts < 5) {
+    const { data: existing } = await supabase
+      .from('cotizaciones')
+      .select('id')
+      .eq('order_number', order_number)
+      .maybeSingle()
+    if (!existing) break
+    order_number = generateOrderNumber()
+    attempts++
+  }
+
+  const { data: cotizacion, error } = await supabase
+    .from('cotizaciones')
+    .insert({
+      order_number,
+      admin_id: data.agentId,
+      status: 'pendiente',
+      vehicle_data: data.vehicleData,
+      selected_process: 'amparo',
+      photo_urls: data.photoUrls,
+      client_email: data.clientEmail,
+    })
+    .select()
+    .single()
+
+  if (error) return { error: error.message }
+  return { orderNumber: cotizacion.order_number }
+}
+
+export async function aceptarCotizacion(id: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'No autenticado.' }
+
+  // Obtener la cotización para verificar y enviar email
+  const serviceSupabase = await createServiceClient()
+  const { data: cot, error: fetchError } = await serviceSupabase
+    .from('cotizaciones')
+    .select('*')
+    .eq('id', id)
+    .eq('admin_id', user.id)
+    .eq('status', 'pendiente')
+    .single()
+
+  if (fetchError || !cot) return { error: 'No encontrada o sin permisos.' }
+
+  const { error } = await serviceSupabase
+    .from('cotizaciones')
+    .update({ status: 'validacion' })
+    .eq('id', id)
+
+  if (error) return { error: error.message }
+
+  // Enviar email de confirmación al cliente
+  if (cot.client_email) {
+    const vd = cot.vehicle_data as Record<string, string>
+    const { data: agentProfile } = await serviceSupabase
+      .from('profiles')
+      .select('nombre, apellido')
+      .eq('id', user.id)
+      .single()
+    const agentName = agentProfile
+      ? `${agentProfile.nombre} ${agentProfile.apellido}`
+      : 'tu agente'
+
+    sendAmparoAceptadoEmail({
+      to: cot.client_email,
+      nombre: cot.client_email,
+      orderNumber: cot.order_number,
+      agentName,
+      vehiculo: `${vd.year} ${vd.make} ${vd.model}`,
+    })
+  }
+
+  revalidatePath('/admin/cotizaciones')
   return { success: true }
 }
 

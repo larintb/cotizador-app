@@ -65,7 +65,8 @@ export const fmt = (n: number) =>
   n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 })
 
 export const STATUS_LABELS: Record<string, { label: string; color: string; dot: string; badge: string }> = {
-  validacion: { label: 'Proceso de Validación', color: 'blue',   dot: 'bg-blue-500',   badge: 'bg-blue-50 text-blue-800 border border-blue-200' },
+  pendiente:  { label: 'Pendiente de Aprobación', color: 'yellow', dot: 'bg-yellow-400', badge: 'bg-yellow-50 text-yellow-800 border border-yellow-200' },
+  validacion: { label: 'Proceso de Validación',   color: 'blue',   dot: 'bg-blue-500',   badge: 'bg-blue-50 text-blue-800 border border-blue-200' },
   sellado:    { label: 'Proceso de Sellado',     color: 'purple', dot: 'bg-purple-500', badge: 'bg-purple-50 text-purple-800 border border-purple-200' },
   inspeccion: { label: 'Proceso de Inspección',  color: 'amber',  dot: 'bg-amber-500',  badge: 'bg-amber-50 text-amber-800 border border-amber-200' },
   pedimento:  { label: 'Generando Pedimento',    color: 'orange', dot: 'bg-orange-500', badge: 'bg-orange-50 text-orange-800 border border-orange-200' },
@@ -73,10 +74,10 @@ export const STATUS_LABELS: Record<string, { label: string; color: string; dot: 
   recoger:    { label: 'Listo para Recoger',     color: 'green',  dot: 'bg-green-500',  badge: 'bg-green-50 text-green-800 border border-green-200' },
 }
 
-export const ESTATUSES = Object.entries(STATUS_LABELS).map(([value, data]) => ({
-  value,
-  ...data,
-}))
+// pendiente no aparece en el selector de estatus del admin (se acepta con botón dedicado)
+export const ESTATUSES = Object.entries(STATUS_LABELS)
+  .filter(([value]) => value !== 'pendiente')
+  .map(([value, data]) => ({ value, ...data }))
 
 export const PROCESS_LABELS: Record<string, string> = {
   importacion: 'Importación Definitiva A1',

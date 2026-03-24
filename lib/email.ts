@@ -502,3 +502,58 @@ export async function sendPaymentFailedEmail(opts: {
     console.error('[Resend] sendPaymentFailedEmail error:', err)
   }
 }
+
+// ─── Amparo confirmado ───────────────────────────────────────────────────────
+
+function amparoAceptadoHtml(opts: { nombre: string; orderNumber: string; agentName: string; vehiculo: string }) {
+  return layout(`
+    <p style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#6b7280;margin:0 0 8px;">
+      Solicitud Confirmada
+    </p>
+    <h1 style="font-size:24px;font-weight:900;color:#000;margin:0 0 24px;line-height:1.2;">
+      Tu Amparo Legal ha sido aceptado
+    </h1>
+
+    <div style="background:#f9fafb;border:1px solid #e5e7eb;padding:20px;margin-bottom:24px;">
+      <p style="margin:0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#9ca3af;">Vehículo</p>
+      <p style="margin:0;font-size:16px;font-weight:800;color:#000;">${opts.vehiculo}</p>
+    </div>
+
+    <div style="background:#000;padding:20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <p style="margin:0 0 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#6b7280;">Número de Orden</p>
+        <p style="margin:0;font-size:22px;font-weight:900;color:#fff;letter-spacing:3px;">${opts.orderNumber}</p>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:#374151;line-height:1.7;margin:0 0 16px;">
+      Hola <strong>${opts.nombre}</strong>, tu solicitud de Proceso de Amparo Legal fue confirmada por el agente
+      <strong>${opts.agentName}</strong>. Ya puedes seguir el estado de tu trámite usando tu número de orden.
+    </p>
+
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:16px;margin-bottom:8px;">
+      <p style="margin:0;font-size:12px;color:#166534;line-height:1.6;">
+        Guarda tu número de orden <strong>${opts.orderNumber}</strong> — lo necesitarás para consultar el avance de tu trámite en cualquier momento.
+      </p>
+    </div>
+  `)
+}
+
+export async function sendAmparoAceptadoEmail(opts: {
+  to: string
+  nombre: string
+  orderNumber: string
+  agentName: string
+  vehiculo: string
+}) {
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: opts.to,
+      subject: `Solicitud de Amparo confirmada — ${opts.orderNumber} — Arancela`,
+      html: amparoAceptadoHtml(opts),
+    })
+  } catch (err) {
+    console.error('[Resend] sendAmparoAceptadoEmail error:', err)
+  }
+}

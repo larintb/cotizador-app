@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Step1VIN from './_components/Step1VIN'
 import Step2Confirm from './_components/Step2Confirm'
+import StepAmparoPhotos from './_components/StepAmparoPhotos'
 import Step3Adjustments from './_components/Step3Adjustments'
 import Step4Result from './_components/Step4Result'
 
@@ -17,11 +18,20 @@ interface VehicleData {
   cylinders: string
 }
 
-const STEPS = [
+// Con amparo: VIN → Vehículo → Fotos → Ajustes → Resultado (5 pasos)
+// Sin amparo: VIN → Vehículo → Ajustes → Resultado (4 pasos)
+const STEPS_BASE = [
   { number: 1, label: 'VIN' },
   { number: 2, label: 'Vehículo' },
   { number: 3, label: 'Ajustes' },
   { number: 4, label: 'Resultado' },
+]
+const STEPS_AMPARO = [
+  { number: 1, label: 'VIN' },
+  { number: 2, label: 'Vehículo' },
+  { number: 3, label: 'Fotos' },
+  { number: 4, label: 'Ajustes' },
+  { number: 5, label: 'Resultado' },
 ]
 
 export default function DashboardPage() {
@@ -33,20 +43,24 @@ export default function DashboardPage() {
   const [customsValueUSD, setCustomsValueUSD] = useState('')
   const [customsValueSource, setCustomsValueSource] = useState('')
 
+  const isAmparo = selectedProcess === 'amparo'
+  const STEPS = isAmparo ? STEPS_AMPARO : STEPS_BASE
+  // Mapeo de step lógico a índice de componente
+  const stepFotos    = isAmparo ? 3 : -1
+  const stepAjustes  = isAmparo ? 4 : 3
+  const stepResult   = isAmparo ? 5 : 4
+
   const handleStep1Next = (data: VehicleData) => {
     setVehicleData(data)
     setSelectedProcess('')
-
-    // Lookup customs value from catalog
     const lookup = lookupCustomsValue(data.make, data.model, data.year, data.cylinders)
-    if (lookup && lookup.value) {
+    if (lookup?.value) {
       setCustomsValueUSD(String(lookup.value))
       setCustomsValueSource(lookup.source)
     } else {
       setCustomsValueUSD('')
       setCustomsValueSource('not_found')
     }
-
     setStep(2)
   }
 
@@ -109,12 +123,20 @@ export default function DashboardPage() {
             vehicleData={vehicleData}
             selectedProcess={selectedProcess}
             onSelectProcess={setSelectedProcess}
-            onNext={() => setStep(3)}
+            onNext={() => setStep(isAmparo ? stepFotos : stepAjustes)}
             onBack={() => setStep(1)}
           />
         )}
 
-        {step === 3 && vehicleData && (
+        {step === stepFotos && vehicleData && (
+          <StepAmparoPhotos
+            vin={vehicleData.vin}
+            onNext={() => setStep(stepAjustes)}
+            onBack={() => setStep(2)}
+          />
+        )}
+
+        {step === stepAjustes && vehicleData && (
           <Step3Adjustments
             selectedProcess={selectedProcess}
             exchangeRate={exchangeRate}
@@ -124,12 +146,12 @@ export default function DashboardPage() {
             onExchangeRateChange={setExchangeRate}
             onAgencyFeesChange={setAgencyFees}
             onCustomsValueChange={setCustomsValueUSD}
-            onNext={() => setStep(4)}
-            onBack={() => setStep(2)}
+            onNext={() => setStep(stepResult)}
+            onBack={() => setStep(isAmparo ? stepFotos : 2)}
           />
         )}
 
-        {step === 4 && vehicleData && (
+        {step === stepResult && vehicleData && (
           <Step4Result
             vehicleData={vehicleData}
             selectedProcess={selectedProcess}

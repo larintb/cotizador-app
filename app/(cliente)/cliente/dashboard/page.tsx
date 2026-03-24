@@ -1,15 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Loader2, AlertCircle, Banknote, Car, Calendar, Calculator } from 'lucide-react'
+import { Search, Loader2, AlertCircle, Banknote, Car, Calendar, Calculator, CheckCircle } from 'lucide-react'
 import { buscarCotizacion } from '@/app/actions/cotizaciones'
 import { fmt, redondear500, STATUS_LABELS, PROCESS_LABELS } from '@/lib/utils'
 import { lookupCustomsValue } from '@/lib/catalogoLookup'
 
 import Step1VIN from '@/app/(admin)/admin/dashboard/_components/Step1VIN'
 import Step2Confirm from '@/app/(admin)/admin/dashboard/_components/Step2Confirm'
+import StepAmparoPhotos from '@/app/(admin)/admin/dashboard/_components/StepAmparoPhotos'
 import Step3Adjustments from '@/app/(admin)/admin/dashboard/_components/Step3Adjustments'
 import Step4ClientResult from './_components/Step4ClientResult'
+import StepSelectAgent from './_components/StepSelectAgent'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -34,12 +36,59 @@ function StatusBadge({ status }: { status: string }) {
   )
 }
 
-const STEPS = [
+const STEPS_BASE = [
   { number: 1, label: 'VIN' },
   { number: 2, label: 'Vehículo' },
   { number: 3, label: 'Ajustes' },
   { number: 4, label: 'Resultado' },
 ]
+const STEPS_AMPARO = [
+  { number: 1, label: 'VIN' },
+  { number: 2, label: 'Vehículo' },
+  { number: 3, label: 'Fotos' },
+  { number: 4, label: 'Agente' },
+]
+
+// ─── Amparo success screen ────────────────────────────────────────────────────
+
+function AmparoSuccess({ orderNumber, onReset }: { orderNumber: string; onReset: () => void }) {
+  return (
+    <div className="animate-slide-left text-center">
+      <div className="flex justify-center mb-6">
+        <div className="w-16 h-16 bg-[#10B981] flex items-center justify-center">
+          <CheckCircle size={32} className="text-white" />
+        </div>
+      </div>
+      <h2 className="text-2xl font-black uppercase tracking-tight mb-2">¡Solicitud Enviada!</h2>
+      <p className="text-sm text-gray-500 mb-8">
+        Tu solicitud de Amparo Legal fue enviada al agente. Te notificaremos por correo cuando sea aceptada.
+      </p>
+
+      <div className="bg-black text-white p-6 mb-8">
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+          Número de Orden
+        </p>
+        <p className="text-3xl font-black tracking-widest">{orderNumber}</p>
+        <p className="text-xs text-gray-400 mt-2">Guarda este número para dar seguimiento a tu trámite</p>
+      </div>
+
+      <div className="p-4 border border-gray-200 bg-gray-50 mb-8 text-left">
+        <p className="text-xs text-gray-500 leading-relaxed">
+          Tu agente revisará la solicitud y recibirás un correo de confirmación.
+          Puedes consultar el estado de tu orden en la pestaña <strong className="text-gray-700">Buscar Orden</strong>.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={onReset}
+        className="w-full flex items-center justify-center gap-3 py-4 border-2 border-black font-bold text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-200 text-black"
+      >
+        Nueva Cotización
+      </button>
+    </div>
+  )
+}
 
 // ─── Cotizador tab ────────────────────────────────────────────────────────────
 
@@ -51,6 +100,18 @@ function CotizadorTab() {
   const [agencyFees, setAgencyFees] = useState('5500')
   const [customsValueUSD, setCustomsValueUSD] = useState('')
   const [customsValueSource, setCustomsValueSource] = useState('')
+  const [photoUrls, setPhotoUrls] = useState<string[]>([])
+  const [amparoOrderNumber, setAmparoOrderNumber] = useState<string | null>(null)
+
+  const isAmparo = selectedProcess === 'amparo'
+
+  // Amparo: VIN(1) → Confirm(2) → Fotos(3) → Agente(4)
+  // Otros:  VIN(1) → Confirm(2) → Ajustes(3) → Resultado(4)
+  const STEPS = isAmparo ? STEPS_AMPARO : STEPS_BASE
+  const stepFotos   = isAmparo ? 3 : -1
+  const stepAgente  = isAmparo ? 4 : -1
+  const stepAjustes = isAmparo ? -1 : 3
+  const stepResult  = isAmparo ? -1 : 4
 
   const handleStep1Next = (data: VehicleData) => {
     setVehicleData(data)
@@ -74,6 +135,13 @@ function CotizadorTab() {
     setAgencyFees('5500')
     setCustomsValueUSD('')
     setCustomsValueSource('')
+    setPhotoUrls([])
+    setAmparoOrderNumber(null)
+  }
+
+  // Amparo success screen
+  if (isAmparo && amparoOrderNumber) {
+    return <AmparoSuccess orderNumber={amparoOrderNumber} onReset={handleReset} />
   }
 
   return (
@@ -84,22 +152,18 @@ function CotizadorTab() {
           {STEPS.map((s, i) => (
             <div key={s.number} className="flex items-center flex-1 last:flex-none">
               <div className="flex items-center gap-2 flex-shrink-0">
-                <div
-                  className={`w-8 h-8 flex items-center justify-center font-black text-sm transition-all duration-300 ${
-                    step === s.number
-                      ? 'bg-[#10B981] text-white'
-                      : step > s.number
-                      ? 'bg-black text-white'
-                      : 'bg-gray-200 text-gray-400'
-                  }`}
-                >
+                <div className={`w-8 h-8 flex items-center justify-center font-black text-sm transition-all duration-300 ${
+                  step === s.number
+                    ? 'bg-[#10B981] text-white'
+                    : step > s.number
+                    ? 'bg-black text-white'
+                    : 'bg-gray-200 text-gray-400'
+                }`}>
                   {step > s.number ? '✓' : s.number}
                 </div>
-                <span
-                  className={`text-xs font-bold uppercase tracking-widest hidden sm:inline ${
-                    step === s.number ? 'text-black' : step > s.number ? 'text-gray-600' : 'text-gray-400'
-                  }`}
-                >
+                <span className={`text-xs font-bold uppercase tracking-widest hidden sm:inline ${
+                  step === s.number ? 'text-black' : step > s.number ? 'text-gray-600' : 'text-gray-400'
+                }`}>
                   {s.label}
                 </span>
               </div>
@@ -125,12 +189,29 @@ function CotizadorTab() {
             vehicleData={vehicleData}
             selectedProcess={selectedProcess}
             onSelectProcess={setSelectedProcess}
-            onNext={() => setStep(3)}
+            onNext={() => setStep(isAmparo ? stepFotos : stepAjustes)}
             onBack={() => setStep(1)}
           />
         )}
 
-        {step === 3 && vehicleData && (
+        {step === stepFotos && vehicleData && (
+          <StepAmparoPhotos
+            vin={vehicleData.vin}
+            onNext={(urls) => { setPhotoUrls(urls); setStep(stepAgente) }}
+            onBack={() => setStep(2)}
+          />
+        )}
+
+        {step === stepAgente && vehicleData && (
+          <StepSelectAgent
+            vehicleData={vehicleData as Record<string, string>}
+            photoUrls={photoUrls}
+            onBack={() => setStep(stepFotos)}
+            onSuccess={(orderNumber) => setAmparoOrderNumber(orderNumber)}
+          />
+        )}
+
+        {step === stepAjustes && vehicleData && (
           <Step3Adjustments
             selectedProcess={selectedProcess}
             exchangeRate={exchangeRate}
@@ -140,12 +221,12 @@ function CotizadorTab() {
             onExchangeRateChange={setExchangeRate}
             onAgencyFeesChange={setAgencyFees}
             onCustomsValueChange={setCustomsValueUSD}
-            onNext={() => setStep(4)}
+            onNext={() => setStep(stepResult)}
             onBack={() => setStep(2)}
           />
         )}
 
-        {step === 4 && vehicleData && (
+        {step === stepResult && vehicleData && (
           <Step4ClientResult
             vehicleData={vehicleData}
             selectedProcess={selectedProcess}
@@ -255,9 +336,7 @@ function BuscarOrdenTab() {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-1 h-4 bg-[#10B981]" />
-                <span className="text-xs font-bold uppercase tracking-widest text-gray-600">
-                  Vehículo
-                </span>
+                <span className="text-xs font-bold uppercase tracking-widest text-gray-600">Vehículo</span>
               </div>
               <div className="bg-gray-50 border border-gray-200 p-4">
                 <div className="flex items-center gap-2 mb-1">
@@ -275,9 +354,7 @@ function BuscarOrdenTab() {
             </div>
 
             <div className="flex items-center justify-between p-4 border border-gray-200">
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
-                Tipo de Proceso
-              </span>
+              <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Tipo de Proceso</span>
               <span className="text-sm font-bold text-black">
                 {PROCESS_LABELS[cotizacion.selected_process as string] || cotizacion.selected_process}
               </span>
@@ -290,24 +367,30 @@ function BuscarOrdenTab() {
               </span>
               <span className="text-sm font-bold text-black">
                 {new Date(cotizacion.created_at).toLocaleDateString('es-MX', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
+                  day: '2-digit', month: 'long', year: 'numeric',
                 })}
               </span>
             </div>
 
-            <div className="bg-[#10B981] p-5 flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1 text-white">
-                  Total
-                </p>
-                <p className="text-3xl font-black text-white">
-                  {fmt(redondear500((cotizacion.result as Record<string, number>).total))}
+            {cotizacion.result && (
+              <div className="bg-[#10B981] p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1 text-white">Total</p>
+                  <p className="text-3xl font-black text-white">
+                    {fmt(redondear500((cotizacion.result as Record<string, number>).total))}
+                  </p>
+                </div>
+                <Banknote size={32} className="text-white opacity-40" />
+              </div>
+            )}
+
+            {!cotizacion.result && (
+              <div className="bg-yellow-50 border border-yellow-200 p-4">
+                <p className="text-xs font-bold text-yellow-800 uppercase tracking-widest">
+                  Pendiente de aprobación por tu agente
                 </p>
               </div>
-              <Banknote size={32} className="text-white opacity-40" />
-            </div>
+            )}
 
             <div className="p-4 border border-gray-200 bg-gray-50">
               <p className="text-xs text-gray-500 leading-relaxed">
@@ -339,20 +422,16 @@ export default function ClienteDashboard() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-black uppercase tracking-tight mb-2">Mi Panel</h1>
         <p className="text-gray-500">Cotiza tu vehículo o consulta el estado de tu orden.</p>
       </div>
 
-      {/* Tabs */}
       <div className="flex border-b-2 border-gray-200 mb-8">
         <button
           onClick={() => setTab('cotizar')}
           className={`flex items-center gap-2 px-5 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-200 border-b-2 -mb-0.5 ${
-            tab === 'cotizar'
-              ? 'border-[#10B981] text-black'
-              : 'border-transparent text-gray-400 hover:text-gray-600'
+            tab === 'cotizar' ? 'border-[#10B981] text-black' : 'border-transparent text-gray-400 hover:text-gray-600'
           }`}
         >
           <Calculator size={16} />
@@ -361,9 +440,7 @@ export default function ClienteDashboard() {
         <button
           onClick={() => setTab('buscar')}
           className={`flex items-center gap-2 px-5 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-200 border-b-2 -mb-0.5 ${
-            tab === 'buscar'
-              ? 'border-[#10B981] text-black'
-              : 'border-transparent text-gray-400 hover:text-gray-600'
+            tab === 'buscar' ? 'border-[#10B981] text-black' : 'border-transparent text-gray-400 hover:text-gray-600'
           }`}
         >
           <Search size={16} />
