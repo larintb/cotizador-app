@@ -104,7 +104,7 @@ export default async function CotizacionesPage() {
                           </span>
                         </td>
                         <td className="px-4 py-4">
-                          <AcceptButton id={cot.id as string} />
+                          <AcceptButton id={cot.id as string} vehicleData={v} />
                         </td>
                       </tr>
                     )

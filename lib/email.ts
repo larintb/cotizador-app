@@ -505,6 +505,63 @@ export async function sendPaymentFailedEmail(opts: {
 
 // ─── Amparo confirmado ───────────────────────────────────────────────────────
 
+function amparoNuevaSolicitudHtml(opts: { agentNombre: string; orderNumber: string; vehiculo: string; vin: string; clientEmail: string }) {
+  return layout(`
+    <p style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#6b7280;margin:0 0 8px;">
+      Nueva Solicitud
+    </p>
+    <h1 style="font-size:24px;font-weight:900;color:#000;margin:0 0 24px;line-height:1.2;">
+      Un cliente ha solicitado un Amparo Legal
+    </h1>
+
+    <p style="font-size:14px;color:#374151;line-height:1.7;margin:0 0 24px;">
+      Hola <strong>${opts.agentNombre}</strong>, tienes una nueva solicitud de cotización pendiente de aprobación en tu panel.
+    </p>
+
+    <div style="background:#f9fafb;border:1px solid #e5e7eb;padding:20px;margin-bottom:16px;">
+      <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#9ca3af;">Vehículo</p>
+      <p style="margin:0;font-size:16px;font-weight:800;color:#000;">${opts.vehiculo}</p>
+      <p style="margin:4px 0 0;font-size:11px;font-family:monospace;color:#6b7280;">VIN: ${opts.vin}</p>
+    </div>
+
+    <div style="background:#f9fafb;border:1px solid #e5e7eb;padding:20px;margin-bottom:24px;">
+      <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#9ca3af;">Cliente</p>
+      <p style="margin:0;font-size:14px;font-weight:700;color:#000;">${opts.clientEmail}</p>
+    </div>
+
+    <div style="background:#000;padding:20px;margin-bottom:24px;">
+      <p style="margin:0 0 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#6b7280;">Número de Orden</p>
+      <p style="margin:0;font-size:22px;font-weight:900;color:#fff;letter-spacing:3px;">${opts.orderNumber}</p>
+    </div>
+
+    <div style="background:#fefce8;border:1px solid #fef08a;padding:16px;">
+      <p style="margin:0;font-size:12px;color:#854d0e;line-height:1.6;">
+        Ingresa a tu panel de administración para revisar las fotos, calcular la cotización y confirmar la solicitud.
+      </p>
+    </div>
+  `)
+}
+
+export async function sendAmparoNuevaSolicitudEmail(opts: {
+  to: string
+  agentNombre: string
+  orderNumber: string
+  vehiculo: string
+  vin: string
+  clientEmail: string
+}) {
+  try {
+    await resend.emails.send({
+      from: FROM,
+      to: opts.to,
+      subject: `Nueva solicitud de Amparo — ${opts.orderNumber} — Arancela`,
+      html: amparoNuevaSolicitudHtml(opts),
+    })
+  } catch (err) {
+    console.error('[Resend] sendAmparoNuevaSolicitudEmail error:', err)
+  }
+}
+
 function amparoAceptadoHtml(opts: { nombre: string; orderNumber: string; agentName: string; vehiculo: string }) {
   return layout(`
     <p style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#6b7280;margin:0 0 8px;">

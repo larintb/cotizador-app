@@ -4,7 +4,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { generateOrderNumber, PROCESS_LABELS } from '@/lib/utils'
 import { revalidatePath } from 'next/cache'
-import { sendOrderCreatedEmail, sendAmparoAceptadoEmail } from '@/lib/email'
+import { sendOrderCreatedEmail, sendAmparoAceptadoEmail, sendAmparoNuevaSolicitudEmail } from '@/lib/email'
 
 // Admin client que bypassa RLS completamente (igual que en storage.ts)
 function adminDb() {
@@ -218,10 +218,10 @@ export async function crearCotizacionPendiente(data: {
 }) {
   const supabase = adminDb()
 
-  // Validar que el agentId sea un perfil con role='admin' (no superadmin, no cliente)
+  // Validar que el agentId sea un perfil con role='admin' y obtener datos para email
   const { data: agentProfile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, nombre, apellido')
     .eq('id', data.agentId)
     .eq('role', 'admin')
     .single()
@@ -256,10 +256,31 @@ export async function crearCotizacionPendiente(data: {
     .single()
 
   if (error) return { error: error.message }
+
+  // Notificar al agente por email
+  const vd = data.vehicleData
+  const { data: agentUser } = await supabase.auth.admin.getUserById(data.agentId)
+
+  if (agentUser?.user?.email && agentProfile) {
+    sendAmparoNuevaSolicitudEmail({
+      to: agentUser.user.email,
+      agentNombre: agentProfile.nombre,
+      orderNumber: cotizacion.order_number,
+      vehiculo: `${vd.year} ${vd.make} ${vd.model}`,
+      vin: vd.vin,
+      clientEmail: data.clientEmail,
+    })
+  }
+
   return { orderNumber: cotizacion.order_number }
 }
 
-export async function aceptarCotizacion(id: string) {
+export async function aceptarCotizacion(id: string, financials: {
+  customsValueUSD: number
+  exchangeRate: number
+  agencyFees: number
+  result: Record<string, number>
+}) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'No autenticado.' }
@@ -278,7 +299,13 @@ export async function aceptarCotizacion(id: string) {
 
   const { error } = await serviceSupabase
     .from('cotizaciones')
-    .update({ status: 'validacion' })
+    .update({
+      status: 'validacion',
+      customs_value_usd: financials.customsValueUSD,
+      exchange_rate: financials.exchangeRate,
+      agency_fees: financials.agencyFees,
+      result: financials.result,
+    })
     .eq('id', id)
 
   if (error) return { error: error.message }
