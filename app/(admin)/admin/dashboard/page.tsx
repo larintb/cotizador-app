@@ -131,7 +131,7 @@ export default function DashboardPage() {
         {step === stepFotos && vehicleData && (
           <StepAmparoPhotos
             vin={vehicleData.vin}
-            onNext={() => setStep(stepAjustes)}
+            onNext={(_files) => setStep(stepAjustes)}
             onBack={() => setStep(2)}
           />
         )}

@@ -1,9 +1,18 @@
 'use server'
 
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { generateOrderNumber, PROCESS_LABELS } from '@/lib/utils'
 import { revalidatePath } from 'next/cache'
 import { sendOrderCreatedEmail, sendAmparoAceptadoEmail } from '@/lib/email'
+
+// Admin client que bypassa RLS completamente (igual que en storage.ts)
+function adminDb() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 export async function crearCotizacion(data: {
   vehicleData: Record<string, string>
@@ -207,7 +216,7 @@ export async function crearCotizacionPendiente(data: {
   agentId: string
   clientEmail: string
 }) {
-  const supabase = await createServiceClient()
+  const supabase = adminDb()
 
   let order_number = generateOrderNumber()
   let attempts = 0
@@ -246,7 +255,7 @@ export async function aceptarCotizacion(id: string) {
   if (!user) return { error: 'No autenticado.' }
 
   // Obtener la cotización para verificar y enviar email
-  const serviceSupabase = await createServiceClient()
+  const serviceSupabase = adminDb()
   const { data: cot, error: fetchError } = await serviceSupabase
     .from('cotizaciones')
     .select('*')
@@ -267,7 +276,7 @@ export async function aceptarCotizacion(id: string) {
   // Enviar email de confirmación al cliente
   if (cot.client_email) {
     const vd = cot.vehicle_data as Record<string, string>
-    const { data: agentProfile } = await serviceSupabase
+    const { data: agentProfile } = await adminDb()
       .from('profiles')
       .select('nombre, apellido')
       .eq('id', user.id)

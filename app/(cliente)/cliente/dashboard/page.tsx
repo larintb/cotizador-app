@@ -100,7 +100,7 @@ function CotizadorTab() {
   const [agencyFees, setAgencyFees] = useState('5500')
   const [customsValueUSD, setCustomsValueUSD] = useState('')
   const [customsValueSource, setCustomsValueSource] = useState('')
-  const [photoUrls, setPhotoUrls] = useState<string[]>([])
+  const [photoFiles, setPhotoFiles] = useState<File[]>([])
   const [amparoOrderNumber, setAmparoOrderNumber] = useState<string | null>(null)
 
   const isAmparo = selectedProcess === 'amparo'
@@ -135,7 +135,7 @@ function CotizadorTab() {
     setAgencyFees('5500')
     setCustomsValueUSD('')
     setCustomsValueSource('')
-    setPhotoUrls([])
+    setPhotoFiles([])
     setAmparoOrderNumber(null)
   }
 
@@ -197,15 +197,16 @@ function CotizadorTab() {
         {step === stepFotos && vehicleData && (
           <StepAmparoPhotos
             vin={vehicleData.vin}
-            onNext={(urls) => { setPhotoUrls(urls); setStep(stepAgente) }}
+            onNext={(files) => { setPhotoFiles(files); setStep(stepAgente) }}
             onBack={() => setStep(2)}
           />
         )}
 
         {step === stepAgente && vehicleData && (
           <StepSelectAgent
+            vin={vehicleData.vin}
             vehicleData={vehicleData as unknown as Record<string, string>}
-            photoUrls={photoUrls}
+            photoFiles={photoFiles}
             onBack={() => setStep(stepFotos)}
             onSuccess={(orderNumber) => setAmparoOrderNumber(orderNumber)}
           />
