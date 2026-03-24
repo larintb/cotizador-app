@@ -15,7 +15,7 @@ export default function AcceptButton({ id }: { id: string }) {
     const result = await aceptarCotizacion(id)
     setLoading(false)
     if ('error' in result) {
-      setError(result.error)
+      setError(result.error ?? 'Error desconocido')
     } else {
       setDone(true)
     }
