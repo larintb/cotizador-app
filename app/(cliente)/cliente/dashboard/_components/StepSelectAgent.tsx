@@ -47,7 +47,7 @@ export default function StepSelectAgent({ vehicleData, photoUrls, onBack, onSucc
     })
     setSubmitting(false)
     if ('error' in result) {
-      setError(result.error)
+      setError(result.error ?? 'Error desconocido')
     } else {
       onSuccess(result.orderNumber!)
     }
