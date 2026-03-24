@@ -178,17 +178,19 @@ export const NHTSA_MODEL_ALIASES: Record<string, Record<string, string>> = {
     'CASCADIA 125': 'CASCADIA 125',
   },
   KENWORTH: {
-    'T600':     'T600',
-    'T800':     'T800',
-    'W900':     'W900',
-    'T300':     'T300',
-    'T2000':    'T600/800/2000',
-    'T660':     'T660',
-    'T680':     'T660',
-    'T700':     'T660',
+    'T600':      'T600',
+    'T800':      'T800',
+    'W900':      'W900',
+    'T300':      'T300',
+    'T2000':     'T600/800/2000',
+    'T660':      'T660',
+    'T680':      'T660',
+    'T700':      'T660',
     // "T6 Series" es el T600 bajo otra denominación NHTSA
     'T6 SERIES': 'T600/800/2000',
     'T8 SERIES': 'T800',
+    // T4 Series = medium duty conventional
+    'T4 SERIES': 'KEN MEDIUM DUTY',
   },
   PETERBILT: {
     '379': '377/378/379/385/387',
@@ -289,9 +291,11 @@ export const NHTSA_MODEL_ALIASES: Record<string, Record<string, string>> = {
     'GRAND VOYAGER': 'VOYAGER',
   },
   // TOYOTA: "Corolla Matrix" → reducir a "COROLLA" para partial match
+  // "FJ Cruiser" → catálogo tiene typo "F J CRUISER" (con espacio)
   TOYOTA: {
     'COROLLA MATRIX': 'COROLLA',
-    'MATRIX': 'COROLLA',
+    'MATRIX':         'COROLLA',
+    'FJ CRUISER':     'F J CRUISER',
   },
   // SUBARU: catálogo tiene typo "TRIBECEA" en lugar de "TRIBECA"
   SUBARU: {
