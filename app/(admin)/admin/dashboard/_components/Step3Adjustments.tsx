@@ -184,7 +184,7 @@ function NumberInput({
           error ? 'border-[#10B981] bg-emerald-50' : 'border-gray-300 focus-within:border-black bg-white'
         }`}
       >
-        <span className="px-3 py-3 text-sm font-bold text-gray-500 border-r border-gray-200 bg-gray-50">
+        <span className="px-3 py-3 text-sm font-bold text-gray-500 border-r border-gray-200 bg-gray-50 flex-shrink-0">
           {prefix}
         </span>
         <input
@@ -193,9 +193,9 @@ function NumberInput({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           step="0.01"
-          className="flex-1 px-3 py-3 text-sm font-bold text-black outline-none bg-transparent"
+          className="flex-1 min-w-0 px-3 py-3 text-sm font-bold text-black outline-none bg-transparent"
         />
-        <span className="px-3 py-3 text-xs font-bold text-gray-400">{suffix}</span>
+        <span className="px-2 py-3 text-xs font-bold text-gray-400 flex-shrink-0">{suffix}</span>
       </div>
       {error && <p className="text-xs text-[#10B981] font-bold mt-1">{error}</p>}
     </>
