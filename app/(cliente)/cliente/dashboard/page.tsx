@@ -204,7 +204,7 @@ function CotizadorTab() {
 
         {step === stepAgente && vehicleData && (
           <StepSelectAgent
-            vehicleData={vehicleData as Record<string, string>}
+            vehicleData={vehicleData as unknown as Record<string, string>}
             photoUrls={photoUrls}
             onBack={() => setStep(stepFotos)}
             onSuccess={(orderNumber) => setAmparoOrderNumber(orderNumber)}
