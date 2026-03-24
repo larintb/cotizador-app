@@ -6,7 +6,7 @@ import Step2Confirm from './_components/Step2Confirm'
 import Step3Adjustments from './_components/Step3Adjustments'
 import Step4Result from './_components/Step4Result'
 
-import { lookupCustomsValue } from '@/lib/customsValues'
+import { lookupCustomsValue } from '@/lib/catalogoLookup'
 
 interface VehicleData {
   vin: string

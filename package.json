@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:lookup": "node scripts/test-lookup.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "^9.5.0",
