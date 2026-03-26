@@ -1,6 +1,6 @@
 'use client'
 
-import { RotateCcw, Banknote } from 'lucide-react'
+import { RotateCcw, Banknote, UserCheck } from 'lucide-react'
 import { calcular, redondear500, fmt } from '@/lib/utils'
 
 interface VehicleData {
@@ -18,6 +18,7 @@ interface Props {
   customsValueUSD: string
   exchangeRate: string
   agencyFees: string
+  onNext: () => void
   onReset: () => void
 }
 
@@ -34,6 +35,7 @@ export default function Step4ClientResult({
   customsValueUSD,
   exchangeRate,
   agencyFees,
+  onNext,
   onReset,
 }: Props) {
   const result = calcular(
@@ -89,6 +91,15 @@ export default function Step4ClientResult({
           factores aduaneros. Contacta a tu agente Arancela para más información.
         </p>
       </div>
+
+      <button
+        type="button"
+        onClick={onNext}
+        className="w-full flex items-center justify-center gap-3 py-4 bg-black text-white font-bold text-sm uppercase tracking-widest hover:bg-[#10B981] transition-all duration-200 mb-3"
+      >
+        <UserCheck size={16} />
+        Seleccionar Agente
+      </button>
 
       <button
         type="button"

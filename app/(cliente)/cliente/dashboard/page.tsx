@@ -39,6 +39,7 @@ const STEPS_BASE = [
   { number: 1, label: 'VIN' },
   { number: 2, label: 'Vehículo' },
   { number: 3, label: 'Resultado' },
+  { number: 4, label: 'Agente' },
 ]
 const STEPS_AMPARO = [
   { number: 1, label: 'VIN' },
@@ -59,7 +60,7 @@ function AmparoSuccess({ orderNumber, onReset }: { orderNumber: string; onReset:
       </div>
       <h2 className="text-2xl font-black uppercase tracking-tight mb-2">¡Solicitud Enviada!</h2>
       <p className="text-sm text-gray-500 mb-8">
-        Tu solicitud de Amparo Legal fue enviada al agente. Te notificaremos por correo cuando sea aceptada.
+        Tu solicitud fue enviada al agente. Te notificaremos por correo cuando sea aceptada.
       </p>
 
       <div className="bg-black text-white p-6 mb-8">
@@ -108,7 +109,7 @@ function CotizadorTab() {
   // Otros:  VIN(1) → Confirm(2) → Resultado(3)
   const STEPS = isAmparo ? STEPS_AMPARO : STEPS_BASE
   const stepFotos  = isAmparo ? 3 : -1
-  const stepAgente = isAmparo ? 4 : -1
+  const stepAgente = 4
   const stepResult = isAmparo ? -1 : 3
 
   const handleStep1Next = (data: VehicleData) => {
@@ -135,8 +136,8 @@ function CotizadorTab() {
     setVinRejected(false)
   }
 
-  // Amparo success screen
-  if (isAmparo && amparoOrderNumber) {
+  // Success screen (all processes)
+  if (amparoOrderNumber) {
     return <AmparoSuccess orderNumber={amparoOrderNumber} onReset={handleReset} />
   }
 
@@ -230,7 +231,7 @@ function CotizadorTab() {
             vin={vehicleData.vin}
             vehicleData={vehicleData as unknown as Record<string, string>}
             photoFiles={photoFiles}
-            onBack={() => setStep(stepFotos)}
+            onBack={() => setStep(isAmparo ? stepFotos : stepResult)}
             onSuccess={(orderNumber) => setAmparoOrderNumber(orderNumber)}
           />
         )}
@@ -242,6 +243,7 @@ function CotizadorTab() {
             customsValueUSD={customsValueUSD}
             exchangeRate={exchangeRate}
             agencyFees={agencyFees}
+            onNext={() => setStep(stepAgente)}
             onReset={handleReset}
           />
         )}
