@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { SlidersHorizontal, ChevronLeft, ArrowRight } from 'lucide-react'
+import { createPortal } from 'react-dom'
+import { SlidersHorizontal, ChevronLeft, ArrowRight, BookOpen, X, Info } from 'lucide-react'
+import type { CatalogDetails } from '@/lib/catalogoLookup'
+import { fmt } from '@/lib/utils'
 
 interface Props {
   selectedProcess: string
@@ -9,6 +12,7 @@ interface Props {
   agencyFees: string
   customsValueUSD: string
   customsValueSource: string
+  catalogDetails?: CatalogDetails | null
   onExchangeRateChange: (v: string) => void
   onAgencyFeesChange: (v: string) => void
   onCustomsValueChange: (v: string) => void
@@ -22,6 +26,7 @@ export default function Step3Adjustments({
   agencyFees,
   customsValueUSD,
   customsValueSource,
+  catalogDetails,
   onExchangeRateChange,
   onAgencyFeesChange,
   onCustomsValueChange,
@@ -29,6 +34,7 @@ export default function Step3Adjustments({
   onBack,
 }: Props) {
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [showCatalog, setShowCatalog] = useState(false)
 
   const validateAndNext = () => {
     const newErrors: Record<string, string> = {}
@@ -95,7 +101,142 @@ export default function Step3Adjustments({
               Valor obtenido del Catálogo Numérico oficial. Puede modificarlo si es necesario.
             </p>
           )}
+          {catalogDetails && (
+            <button
+              type="button"
+              onClick={() => setShowCatalog(true)}
+              className="mt-2 flex items-center gap-1.5 text-xs font-bold text-[#10B981] hover:underline"
+            >
+              <BookOpen size={12} /> Ver detalles del catálogo
+            </button>
+          )}
         </div>
+
+        {/* Catalog Details Modal */}
+        {showCatalog && catalogDetails && typeof document !== 'undefined' && createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.55)' }}
+            onClick={() => setShowCatalog(false)}
+          >
+            <div
+              className="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-black">
+                <div className="flex items-center gap-2">
+                  <BookOpen size={16} className="text-[#10B981]" />
+                  <span className="text-sm font-black text-white uppercase tracking-widest">Detalles del Catálogo</span>
+                </div>
+                <button onClick={() => setShowCatalog(false)} className="text-gray-400 hover:text-white transition-colors">
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="p-5 space-y-5">
+                {/* Match type badge */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 ${
+                    catalogDetails.matchTipo === 'exacto'
+                      ? 'bg-black text-white'
+                      : catalogDetails.matchTipo === 'parcial'
+                      ? 'bg-gray-200 text-gray-700'
+                      : 'bg-gray-100 text-gray-500'
+                  }`}>
+                    {catalogDetails.matchTipo === 'exacto' ? 'Coincidencia Exacta' : catalogDetails.matchTipo === 'parcial' ? 'Coincidencia Parcial' : 'Aproximado'}
+                  </span>
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 ${
+                    catalogDetails.fuentePrecio === 'directo' ? 'bg-[#10B981] text-white' : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {catalogDetails.fuentePrecio === 'directo' ? 'Precio Directo' : 'Estimado por Grupo'}
+                  </span>
+                </div>
+
+                {/* Modelo info */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 bg-gray-50 border border-gray-200">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Modelo en Catálogo</p>
+                    <p className="text-sm font-black text-black">{catalogDetails.modeloCatalogo}</p>
+                  </div>
+                  <div className="p-3 bg-gray-50 border border-gray-200">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Modelo del VIN</p>
+                    <p className="text-sm font-black text-black">{catalogDetails.modeloVIN}</p>
+                  </div>
+                </div>
+
+                {/* Año info */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 bg-gray-50 border border-gray-200">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Año del Vehículo</p>
+                    <p className="text-sm font-black text-black">{catalogDetails.anioVehiculo}</p>
+                  </div>
+                  <div className="p-3 border border-gray-200 bg-gray-50">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Año Efectivo Catálogo</p>
+                    <p className="text-sm font-black text-black">{catalogDetails.anioEfectivo}</p>
+                    {catalogDetails.anioEfectivo !== catalogDetails.anioVehiculo && (
+                      <p className="text-[10px] text-yellow-600 font-bold mt-1 flex items-center gap-1">
+                        <Info size={10} /> Año ajustado por disponibilidad
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Fracción y descripción */}
+                <div className="space-y-3">
+                  <div className="p-3 bg-gray-50 border border-gray-200">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Fracción Arancelaria</p>
+                    <p className="text-sm font-black text-black font-mono">{catalogDetails.fraccion}</p>
+                  </div>
+                  <div className="p-3 bg-gray-50 border border-gray-200">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Descripción NICO</p>
+                    <p className="text-xs text-gray-700 leading-relaxed">{catalogDetails.descripcionNico}</p>
+                  </div>
+                  {catalogDetails.umt && (
+                    <div className="p-3 bg-gray-50 border border-gray-200">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">UMT</p>
+                      <p className="text-sm font-bold text-black">{catalogDetails.umt}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Todos los precios */}
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Precios por Año (USD)</p>
+                  <div className="border border-gray-200 overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="text-left px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">Año</th>
+                          <th className="text-right px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">Valor USD</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {Object.entries(catalogDetails.todosLosPrecios)
+                          .sort(([a], [b]) => Number(b) - Number(a))
+                          .map(([yr, price]) => (
+                            <tr
+                              key={yr}
+                              className={yr === catalogDetails.anioEfectivo ? 'bg-[#10B981]/10' : 'hover:bg-gray-50'}
+                            >
+                              <td className="px-3 py-2 font-bold text-black">
+                                {yr}
+                                {yr === catalogDetails.anioEfectivo && (
+                                  <span className="ml-2 text-[9px] font-bold text-[#10B981] uppercase">Seleccionado</span>
+                                )}
+                              </td>
+                              <td className="px-3 py-2 text-right font-mono font-bold text-black">{fmt(price)}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
 
         {/* Variables financieras */}
         <div className="grid grid-cols-2 gap-4">

@@ -7,7 +7,7 @@ import StepAmparoPhotos from './_components/StepAmparoPhotos'
 import Step3Adjustments from './_components/Step3Adjustments'
 import Step4Result from './_components/Step4Result'
 
-import { lookupCustomsValue } from '@/lib/catalogoLookup'
+import { lookupCustomsValue, lookupCustomsValueDetails, CatalogDetails } from '@/lib/catalogoLookup'
 
 interface VehicleData {
   vin: string
@@ -42,6 +42,7 @@ export default function DashboardPage() {
   const [agencyFees, setAgencyFees] = useState('5500')
   const [customsValueUSD, setCustomsValueUSD] = useState('')
   const [customsValueSource, setCustomsValueSource] = useState('')
+  const [catalogDetails, setCatalogDetails] = useState<CatalogDetails | null>(null)
 
   const isAmparo = selectedProcess === 'amparo'
   const STEPS = isAmparo ? STEPS_AMPARO : STEPS_BASE
@@ -57,9 +58,11 @@ export default function DashboardPage() {
     if (lookup?.value) {
       setCustomsValueUSD(String(lookup.value))
       setCustomsValueSource(lookup.source)
+      setCatalogDetails(lookupCustomsValueDetails(data.make, data.model, data.year, data.cylinders))
     } else {
       setCustomsValueUSD('')
       setCustomsValueSource('not_found')
+      setCatalogDetails(null)
     }
     setStep(2)
   }
@@ -72,6 +75,7 @@ export default function DashboardPage() {
     setAgencyFees('5500')
     setCustomsValueUSD('')
     setCustomsValueSource('')
+    setCatalogDetails(null)
   }
 
   return (
@@ -143,6 +147,7 @@ export default function DashboardPage() {
             agencyFees={agencyFees}
             customsValueUSD={customsValueUSD}
             customsValueSource={customsValueSource}
+            catalogDetails={catalogDetails}
             onExchangeRateChange={setExchangeRate}
             onAgencyFeesChange={setAgencyFees}
             onCustomsValueChange={setCustomsValueUSD}

@@ -353,6 +353,10 @@ export const NHTSA_MODEL_ALIASES: Record<string, Record<string, string>> = {
   SUZUKI: {
     'GRAND VITARA XL-7': 'XL-7 HARD TOP',
   },
+  // VOLKSWAGEN: catálogo tiene typo "JETTA SPORTW AGEN" (espacio entre W y AGEN)
+  VOLKSWAGEN: {
+    'JETTA SPORTWAGEN': 'JETTA SPORTW AGEN',
+  },
   // SMART: catálogo tiene typo "FORTW O-3 CYL." (espacio entre W y O)
   SMART: {
     'FORTWO': 'FORTW O',
@@ -400,6 +404,119 @@ export const NHTSA_MODEL_ALIASES: Record<string, Record<string, string>> = {
     // Serie 8
     '840I': '8 SERIES', '850I': '8 SERIES',
   },
+}
+
+// Igual que pickBestEntry pero devuelve la entry completa y el año efectivo
+function pickBestEntryDetailed(
+  entries: CatalogoEntry[],
+  year: string
+): { value: number; source: string; entry: CatalogoEntry; effectiveYear: string } | null {
+  let fallback: { value: number; source: string; entry: CatalogoEntry; effectiveYear: string } | null = null
+
+  for (const entry of entries) {
+    const availableYears = Object.keys(entry.precios_resueltos).map(Number)
+    if (availableYears.length === 0) continue
+    const effectiveYear = resolveEffectiveYear(parseInt(year, 10), availableYears)
+    if (entry.precios_resueltos[effectiveYear] == null) continue
+    const rawSource = entry.fuente_precio[effectiveYear] ?? 'resuelto'
+    const source = rawSource === 'directo' ? 'exact' : 'generic-fallback'
+    const result = { value: entry.precios_resueltos[effectiveYear], source, entry, effectiveYear }
+    if (source === 'exact') return result
+    if (!fallback) fallback = result
+  }
+
+  return fallback
+}
+
+// ─── Detalles del catálogo ────────────────────────────────────────────────────
+
+export interface CatalogDetails {
+  value: number
+  modeloCatalogo: string
+  modeloVIN: string
+  matchTipo: 'exacto' | 'parcial' | 'aproximado'
+  fraccion: string
+  descripcionNico: string
+  umt: string
+  anioVehiculo: string
+  anioEfectivo: string
+  fuentePrecio: 'directo' | 'estimado-grupo'
+  todosLosPrecios: Record<string, number>
+}
+
+export function lookupCustomsValueDetails(
+  make: string,
+  model: string,
+  year: string,
+  cylinders: string
+): CatalogDetails | null {
+  const rawMakeKey = make?.toUpperCase().trim()
+  let makeKey = NHTSA_MAKE_ALIASES[rawMakeKey] ?? rawMakeKey
+  let modelKey = model?.toUpperCase().trim()
+
+  if (makeKey === 'TOYOTA' && modelKey.startsWith('SCION ')) {
+    makeKey = 'SCION'
+    modelKey = modelKey.slice(6)
+  }
+
+  const resolvedModel = NHTSA_MODEL_ALIASES[makeKey]?.[modelKey] ?? modelKey
+  const modelNorm = normalizeForMatch(resolvedModel)
+  const modeloVIN = resolvedModel
+
+  const marcas = catalogo[makeKey]
+  if (!marcas) return null
+
+  const entries = Object.entries(marcas)
+
+  // Paso 1: exacto + cilindros
+  for (const [mkey, mEntries] of entries) {
+    if (normalizeForMatch(mkey) === modelNorm && cylinderMatch(mkey, cylinders)) {
+      const r = pickBestEntryDetailed(mEntries, year)
+      if (r) return buildDetails(r, mkey, modeloVIN, year, 'exacto')
+    }
+  }
+
+  // Paso 2: parcial + cilindros
+  for (const [mkey, mEntries] of entries) {
+    const mkeyNorm = normalizeForMatch(mkey)
+    if ((mkeyNorm.startsWith(modelNorm) || modelNorm.startsWith(mkeyNorm)) && cylinderMatch(mkey, cylinders)) {
+      const r = pickBestEntryDetailed(mEntries, year)
+      if (r) return buildDetails(r, mkey, modeloVIN, year, 'parcial')
+    }
+  }
+
+  // Paso 3: parcial sin cilindros
+  for (const [mkey, mEntries] of entries) {
+    const mkeyNorm = normalizeForMatch(mkey)
+    if (mkeyNorm.startsWith(modelNorm) || modelNorm.startsWith(mkeyNorm)) {
+      const r = pickBestEntryDetailed(mEntries, year)
+      if (r) return buildDetails(r, mkey, modeloVIN, year, 'aproximado')
+    }
+  }
+
+  return null
+}
+
+function buildDetails(
+  r: { value: number; source: string; entry: CatalogoEntry; effectiveYear: string },
+  modeloCatalogo: string,
+  modeloVIN: string,
+  anioVehiculo: string,
+  matchTipo: CatalogDetails['matchTipo']
+): CatalogDetails {
+  return {
+    value: r.value,
+    modeloCatalogo,
+    modeloVIN,
+    matchTipo,
+    fraccion: r.entry.fraccion,
+    descripcionNico: r.entry.descripcion_nico,
+    umt: r.entry.umt,
+    anioVehiculo,
+    anioEfectivo: r.effectiveYear,
+    fuentePrecio: r.source === 'exact' ? 'directo' : 'estimado-grupo',
+    todosLosPrecios: r.entry.precios_resueltos,
+  }
 }
 
 // ─── Función principal ────────────────────────────────────────────────────────

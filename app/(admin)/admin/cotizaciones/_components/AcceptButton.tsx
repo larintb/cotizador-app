@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { CheckCircle, Loader2, X, Banknote } from 'lucide-react'
 import { aceptarCotizacion } from '@/app/actions/cotizaciones'
 import { calcular, redondear500, fmt, getIGILabel } from '@/lib/utils'
-import { lookupCustomsValue } from '@/lib/catalogoLookup'
+import { lookupCustomsValue, lookupCustomsValueDetails, CatalogDetails } from '@/lib/catalogoLookup'
 import Step3Adjustments from '@/app/(admin)/admin/dashboard/_components/Step3Adjustments'
 
 interface Props {
@@ -21,6 +21,7 @@ export default function AcceptButton({ id, vehicleData }: Props) {
   const [agencyFees, setAgencyFees]           = useState('5500')
   const [customsValueUSD, setCustomsValueUSD] = useState('')
   const [customsValueSource, setCustomsValueSource] = useState('')
+  const [catalogDetails, setCatalogDetails] = useState<CatalogDetails | null>(null)
 
   const [loading, setLoading] = useState(false)
   const [done, setDone]       = useState(false)
@@ -33,9 +34,11 @@ export default function AcceptButton({ id, vehicleData }: Props) {
     if (lookup?.value) {
       setCustomsValueUSD(String(lookup.value))
       setCustomsValueSource(lookup.source)
+      setCatalogDetails(lookupCustomsValueDetails(vehicleData.make, vehicleData.model, vehicleData.year, vehicleData.cylinders))
     } else {
       setCustomsValueUSD('')
       setCustomsValueSource('not_found')
+      setCatalogDetails(null)
     }
     setModalStep('adjustments')
     setError('')
@@ -129,6 +132,7 @@ export default function AcceptButton({ id, vehicleData }: Props) {
                   agencyFees={agencyFees}
                   customsValueUSD={customsValueUSD}
                   customsValueSource={customsValueSource}
+                  catalogDetails={catalogDetails}
                   onExchangeRateChange={setExchangeRate}
                   onAgencyFeesChange={setAgencyFees}
                   onCustomsValueChange={setCustomsValueUSD}
