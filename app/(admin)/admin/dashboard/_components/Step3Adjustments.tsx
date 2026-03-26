@@ -212,22 +212,25 @@ export default function Step3Adjustments({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
-                        {Object.entries(catalogDetails.todosLosPrecios)
-                          .sort(([a], [b]) => Number(b) - Number(a))
-                          .map(([yr, price]) => (
+                        {(() => {
+                          const sorted = Object.entries(catalogDetails.todosLosPrecios)
+                            .sort(([a], [b]) => Number(b) - Number(a))
+                          const minYr = sorted[sorted.length - 1]?.[0]
+                          return sorted.map(([yr, price]) => (
                             <tr
                               key={yr}
                               className={yr === catalogDetails.anioEfectivo ? 'bg-[#10B981]/10' : 'hover:bg-gray-50'}
                             >
                               <td className="px-3 py-2 font-bold text-black">
-                                {yr}
+                                {yr === minYr ? `${yr} o menor` : yr}
                                 {yr === catalogDetails.anioEfectivo && (
                                   <span className="ml-2 text-[9px] font-bold text-[#10B981] uppercase">Seleccionado</span>
                                 )}
                               </td>
                               <td className="px-3 py-2 text-right font-mono font-bold text-black">{fmt(price)}</td>
                             </tr>
-                          ))}
+                          ))
+                        })()}
                       </tbody>
                     </table>
                   </div>
