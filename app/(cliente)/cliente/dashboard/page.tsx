@@ -9,7 +9,6 @@ import { lookupCustomsValue } from '@/lib/catalogoLookup'
 import Step1VIN from '@/app/(admin)/admin/dashboard/_components/Step1VIN'
 import Step2Confirm from '@/app/(admin)/admin/dashboard/_components/Step2Confirm'
 import StepAmparoPhotos from '@/app/(admin)/admin/dashboard/_components/StepAmparoPhotos'
-import Step3Adjustments from '@/app/(admin)/admin/dashboard/_components/Step3Adjustments'
 import Step4ClientResult from './_components/Step4ClientResult'
 import StepSelectAgent from './_components/StepSelectAgent'
 
@@ -39,8 +38,7 @@ function StatusBadge({ status }: { status: string }) {
 const STEPS_BASE = [
   { number: 1, label: 'VIN' },
   { number: 2, label: 'Vehículo' },
-  { number: 3, label: 'Ajustes' },
-  { number: 4, label: 'Resultado' },
+  { number: 3, label: 'Resultado' },
 ]
 const STEPS_AMPARO = [
   { number: 1, label: 'VIN' },
@@ -96,34 +94,33 @@ function CotizadorTab() {
   const [step, setStep] = useState(1)
   const [vehicleData, setVehicleData] = useState<VehicleData | null>(null)
   const [selectedProcess, setSelectedProcess] = useState('')
-  const [exchangeRate, setExchangeRate] = useState('20.00')
-  const [agencyFees, setAgencyFees] = useState('5500')
+  const [exchangeRate] = useState('20.00')
+  const [agencyFees] = useState('5500')
   const [customsValueUSD, setCustomsValueUSD] = useState('')
   const [customsValueSource, setCustomsValueSource] = useState('')
   const [photoFiles, setPhotoFiles] = useState<File[]>([])
   const [amparoOrderNumber, setAmparoOrderNumber] = useState<string | null>(null)
+  const [vinRejected, setVinRejected] = useState(false)
 
   const isAmparo = selectedProcess === 'amparo'
 
   // Amparo: VIN(1) → Confirm(2) → Fotos(3) → Agente(4)
-  // Otros:  VIN(1) → Confirm(2) → Ajustes(3) → Resultado(4)
+  // Otros:  VIN(1) → Confirm(2) → Resultado(3)
   const STEPS = isAmparo ? STEPS_AMPARO : STEPS_BASE
-  const stepFotos   = isAmparo ? 3 : -1
-  const stepAgente  = isAmparo ? 4 : -1
-  const stepAjustes = isAmparo ? -1 : 3
-  const stepResult  = isAmparo ? -1 : 4
+  const stepFotos  = isAmparo ? 3 : -1
+  const stepAgente = isAmparo ? 4 : -1
+  const stepResult = isAmparo ? -1 : 3
 
   const handleStep1Next = (data: VehicleData) => {
+    const lookup = lookupCustomsValue(data.make, data.model, data.year, data.cylinders)
+    if (!lookup?.value) {
+      setVinRejected(true)
+      return
+    }
     setVehicleData(data)
     setSelectedProcess('')
-    const lookup = lookupCustomsValue(data.make, data.model, data.year, data.cylinders)
-    if (lookup?.value) {
-      setCustomsValueUSD(String(lookup.value))
-      setCustomsValueSource(lookup.source)
-    } else {
-      setCustomsValueUSD('')
-      setCustomsValueSource('not_found')
-    }
+    setCustomsValueUSD(String(lookup.value))
+    setCustomsValueSource(lookup.source)
     setStep(2)
   }
 
@@ -131,17 +128,43 @@ function CotizadorTab() {
     setStep(1)
     setVehicleData(null)
     setSelectedProcess('')
-    setExchangeRate('20.00')
-    setAgencyFees('5500')
     setCustomsValueUSD('')
     setCustomsValueSource('')
     setPhotoFiles([])
     setAmparoOrderNumber(null)
+    setVinRejected(false)
   }
 
   // Amparo success screen
   if (isAmparo && amparoOrderNumber) {
     return <AmparoSuccess orderNumber={amparoOrderNumber} onReset={handleReset} />
+  }
+
+  // VIN rejection screen
+  if (vinRejected) {
+    return (
+      <div className="bg-white border-2 border-gray-200 shadow-xl p-8 text-center">
+        <div className="flex justify-center mb-5">
+          <div className="w-16 h-16 bg-red-100 flex items-center justify-center">
+            <AlertCircle size={32} className="text-red-500" />
+          </div>
+        </div>
+        <h2 className="text-xl font-black uppercase tracking-tight mb-3 text-black">
+          Vehículo No Encontrado en Catálogo
+        </h2>
+        <p className="text-sm text-gray-500 mb-6 leading-relaxed max-w-sm mx-auto">
+          No fue posible determinar el valor aduanal de este vehículo de forma automática.
+          Por favor contacta a tu agente para continuar con tu cotización.
+        </p>
+        <button
+          type="button"
+          onClick={handleReset}
+          className="w-full flex items-center justify-center gap-3 py-4 border-2 border-black font-bold text-sm uppercase tracking-widest hover:bg-black hover:text-white transition-all duration-200 text-black"
+        >
+          Intentar con otro VIN
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -189,7 +212,7 @@ function CotizadorTab() {
             vehicleData={vehicleData}
             selectedProcess={selectedProcess}
             onSelectProcess={setSelectedProcess}
-            onNext={() => setStep(isAmparo ? stepFotos : stepAjustes)}
+            onNext={() => setStep(isAmparo ? stepFotos : stepResult)}
             onBack={() => setStep(1)}
           />
         )}
@@ -209,21 +232,6 @@ function CotizadorTab() {
             photoFiles={photoFiles}
             onBack={() => setStep(stepFotos)}
             onSuccess={(orderNumber) => setAmparoOrderNumber(orderNumber)}
-          />
-        )}
-
-        {step === stepAjustes && vehicleData && (
-          <Step3Adjustments
-            selectedProcess={selectedProcess}
-            exchangeRate={exchangeRate}
-            agencyFees={agencyFees}
-            customsValueUSD={customsValueUSD}
-            customsValueSource={customsValueSource}
-            onExchangeRateChange={setExchangeRate}
-            onAgencyFeesChange={setAgencyFees}
-            onCustomsValueChange={setCustomsValueUSD}
-            onNext={() => setStep(stepResult)}
-            onBack={() => setStep(2)}
           />
         )}
 
